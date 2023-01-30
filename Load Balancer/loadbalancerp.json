@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerName": {
+      "value": "lbexternal"
+    },
+    "lbTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgloadbalancer"
+        }
+      }
+    },
+    "inboundNatRulesProtocol": {
+      "value": "TCP"
+    },
+    "inboundNatRulesFrontendPort": {
+      "value": 4000
+    },
+    "inboundNatRulesBackendPort": {
+      "value": 3389
+    },
+    "enableFloatingIP": {
+      "value": false
+    },
+    "loadBalancingRulesProtocol": {
+      "value": "TCP"
+    },
+    "loadBalancingRulesFrontendIp": {
+      "value": 80
+    },
+    "loadBalancingRulesBackendIp": {
+      "value": 80
+    },
+    "loadBalancingRulesenableFloatingIP": {
+      "value": false
+    },
+    "idleTimeoutInMinutes": {
+      "value": 5
+    },
+    "probesProtocol": {
+      "value": "TCP"
+    },
+    "probesPort": {
+      "value": 80
+    },
+    "probeIntervalInSeconds": {
+      "value": 5
+    },
+    "numberOfProbes": {
+      "value": 2
+    },
+    "publicIpTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgpublicip"
+        }
+      }
+    },
+    "publicIPAllocationMethod": {
+      "value": "Dynamic"
+    },
+    "lbSku": {
+      "value": "Basic"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dataShareAccountName": {
+      "value": "apoorvdatashare"
+    },
+    "dataShareShareName": {
+      "value": "aporvshare"
+    },
+    "resourceTag": {
+      "value": {
+        "environment": "testing"
+      }
+    },
+    "shareKind": {
+      "value": "CopyBased"
+    },
+    "identity": {
+      "value": "SystemAssigned"
+    },
+    "synchronizationSettingsName": {
+      "value": "apoorvsynchronizationSettings"
+    },
+    "synchronizationSettingsKind": {
+      "value": "ScheduleBased"
+    },
+    "syncInterval": {
+      "value": "Day"
+    },
+    "storageAccountName": {
+      "value": "onpremstore3300"
+    },
+    "storageAccountskuName": {
+      "value": "Standard_LRS"
+    },
+    "storageSkuTier": {
+      "value": "Standard"
+    },
+    "storageKind": {
+      "value": "StorageV2"
+    },
+    "supportsHttpsTrafficOnly": {
+      "value": true
+    },
+    "fileEnabled": {
+      "value": true
+    },
+    "blobEnabled": {
+      "value": true
+    },
+    "accessTier": {
+      "value": "Hot"
+    },
+    "isHnsEnabled": {
+      "value": false
+    },
+    "containerName": {
+      "value": "data"
+    },
+    "storagePublicAccess": {
+      "value": "Container"
+    },
+    "immutableStorageWithVersioning": {
+      "value": false
+    },
+    "storageBlobDataReaderRoleDefinitionId": {
+      "value": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
+    },
+    "principalType": {
+      "value": "ServicePrincipal"
+    },
+    "invitationEmail": {
+      "value": "abcd@gmail.com"
+    }
+  }
+}

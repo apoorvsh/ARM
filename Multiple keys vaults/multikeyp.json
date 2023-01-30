@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "value": "akashkey"
+    },
+    "resourceTags": {
+      "value": {
+        "environement": "test"
+      }
+    },
+    "enabledForDeployment": {
+      "value": true
+    },
+    "enabledForTemplateDeployment": {
+      "value": true
+    },
+    "enabledForDiskEncryption": {
+      "value": true
+    },
+    "objectId": {
+      "value": "d850e333-ff3b-4f51-b6b0-c7a00eb24e2a"
+    },
+    "accessPolicyKeys": {
+      "value": "all"
+    },
+    "accessPolicySecrets": {
+      "value": "all"
+    },
+    "keyVaultSku": {
+      "value": "standard"
+    },
+    "keyVaultSkuFamily": {
+      "value": "A"
+    },
+    "copyCount": {
+      "value": 2
+    }
+  }
+}

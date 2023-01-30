@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "store3300123"
+    },
+    "resourceTags": {
+      "value": {
+        "environment": "test"
+      }
+    },
+    "storageAccountSkuName": {
+      "value": "Standard_LRS"
+    },
+    "storageSkuTier": {
+      "value": "Standard"
+    },
+    "storageKind": {
+      "value": "StorageV2"
+    },
+    "supportsHttpsTrafficOnly": {
+      "value": true
+    },
+    "fileEnabled": {
+      "value": true
+    },
+    "blobEnabled": {
+      "value": true
+    },
+    "accessTier": {
+      "value": "Hot"
+    },
+    "isHnsEnabled": {
+      "value": false
+    },
+    "containers": {
+      "value": ["data", "images"]
+    }
+  }
+}

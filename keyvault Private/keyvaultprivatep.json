@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "VnetA"
+    },
+    "vnetTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgVnet"
+        }
+      }
+    },
+    "vnetAddress": {
+      "value": "10.7.0.0/16"
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.7.1.0/24"
+    },
+    "keyVaultName": {
+      "value": "apoorvkey123456789"
+    },
+    "keyVaultTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgvault"
+        }
+      }
+    },
+    "enabledForDeployment": {
+      "value": true
+    },
+    "enabledForTemplateDeployment": {
+      "value": true
+    },
+    "enabledForDiskEncryption": {
+      "value": true
+    },
+    "objectId": {
+      "value": "d850e333-ff3b-4f51-b6b0-c7a00eb24e2a"
+    },
+    "accessPolicyKeys": {
+      "value": "all"
+    },
+    "accessPolicySecrets": {
+      "value": "all"
+    },
+    "keyVaultSku": {
+      "value": "standard"
+    },
+    "keyVaultSkuFamily": {
+      "value": "A"
+    },
+    "keyVaultSecretsName": {
+      "value": "Password"
+    },
+    "keyVaultSecretsValue": {
+      "value": "Password@123"
+    },
+    "privateEndpointName": {
+      "value": "keyVaultPrivateEndpoint"
+    },
+    "groupIds": {
+      "value": "vault"
+    },
+    "privateDnsZoneName": {
+      "value": "privatelink.vaultcore.azure.net"
+    },
+    "location": {
+      "value": "Global"
+    },
+    "registrationEnabledVnetLinks": {
+      "value": false
+    }
+  }
+}

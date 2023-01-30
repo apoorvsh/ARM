@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "type": "string"
+    },
+    "resourceTags": {
+      "type": "object"
+    },
+    "enabledForDeployment": {
+      "type": "bool"
+    },
+    "enabledForTemplateDeployment": {
+      "type": "bool"
+    },
+    "enabledForDiskEncryption": {
+      "type": "bool"
+    },
+    "objectId": {
+      "type": "string"
+    },
+    "accessPolicyKeys": {
+      "type": "string"
+    },
+    "accessPolicySecrets": {
+      "type": "string"
+    },
+    "keyVaultSku": {
+      "type": "string"
+    },
+    "keyVaultSkuFamily": {
+      "type": "string"
+    },
+    "copyCount": {
+      "type": "int"
+    }
+  },
+  "variables": {
+    "copyName": "keyVaultCopies"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2018-02-14",
+      "name": "[concat(parameters('keyVaultName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('resourceTags')]",
+      "properties": {
+        "enabledForDeployment": "[parameters('enabledForDeployment')]",
+        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+        "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('objectId')]",
+            "permissions": {
+              "keys": ["[parameters('accessPolicyKeys')]"],
+              "secrets": ["[parameters('accessPolicySecrets')]"]
+            }
+          }
+        ],
+        "sku": {
+          "name": "[parameters('keyVaultSku')]",
+          "family": "[parameters('keyVaultSkuFamily')]"
+        }
+      },
+      "copy": {
+        "name": "[variables('copyName')]",
+        "count": "[parameters('copyCount')]"
+      }
+    }
+  ],
+  "outputs": {}
+}

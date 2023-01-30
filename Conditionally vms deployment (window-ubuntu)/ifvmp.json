@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "VNETA"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.5.0.0/16"
+    },
+    "windowSubnetName": {
+      "value": "WindowSubnet"
+    },
+    "windowSubnetAddressPrefix": {
+      "value": "10.5.1.0/24"
+    },
+    "ubuntuSubnetName": {
+      "value": "UbuntuSubnet"
+    },
+    "ubuntuSubnetAddressPrefix": {
+      "value": "10.5.2.0/24"
+    },
+    "windowPublicIp": {
+      "value": "WindowPublicIP"
+    },
+    "windowNicName": {
+      "value": "WindowNIC"
+    },
+    "windowNsgName": {
+      "value": "WindowNSGName"
+    },
+    "windowNsgRules": {
+      "value": {
+        "Nsg": {
+          "name": "RDP",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "500",
+          "direction": "Inbound"
+        }
+      }
+    },
+    "windowVmName": {
+      "value": "WindowVM"
+    },
+    "windowVmSize": {
+      "value": "Standard_B2s"
+    },
+    "windowComputerName": {
+      "value": "WindowVM"
+    },
+    "windowUserName": {
+      "value": "testuser"
+    },
+    "windowPassword": {
+      "value": "Password@123"
+    },
+    "windowPublisher": {
+      "value": "MicrosoftWindowsServer"
+    },
+    "windowOffer": {
+      "value": "WindowsServer"
+    },
+    "windowSKU": {
+      "value": "2012-R2-Datacenter"
+    },
+    "windowVersion": {
+      "value": "latest"
+    },
+    "windowOsDisk": {
+      "value": "WindowVMDisk"
+    },
+    "windowCaching": {
+      "value": "ReadWrite"
+    },
+    "windowCreateOption": {
+      "value": "FromImage"
+    },
+    "ubuntuPublicIp": {
+      "value": "UbuntuPublicIP"
+    },
+    "ubuntuNicName": {
+      "value": "UbuntuNIC"
+    },
+    "ubuntuNsgName": {
+      "value": "UbuntuNSG"
+    },
+    "ubuntuNsgrules": {
+      "value": {
+        "Nsg": {
+          "name": "SSH",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "550",
+          "direction": "Inbound"
+        }
+      }
+    },
+    "ubuntuVmName": {
+      "value": "UbuntuVM"
+    },
+    "ubuntuVmSize": {
+      "value": "Standard_B2s"
+    },
+    "ubuntuComputerName": {
+      "value": "UbuntuVM"
+    },
+    "ubuntuUserName": {
+      "value": "testuser"
+    },
+    "ubuntuPassword": {
+      "value": "Password@123"
+    },
+    "ubuntuOsDiskName": {
+      "value": "ubuntuVM1-OSDisk"
+    },
+    "ubuntuCaching": {
+      "value": "ReadWrite"
+    },
+    "ubuntuCreateOption": {
+      "value": "FromImage"
+    },
+    "ubuntuPublisher": {
+      "value": "Canonical"
+    },
+    "ubuntuOffer": {
+      "value": "UbuntuServer"
+    },
+    "ubuntuSku": {
+      "value": "16.04-LTS"
+    },
+    "ubuntuVersion": {
+      "value": "latest"
+    }
+  }
+}

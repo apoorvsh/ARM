@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceTag": {
+      "value": {
+        "environment": "test"
+      }
+    },
+    "vmCount": {
+      "value": 2
+    },
+    "vmSize": {
+      "value": "Standard_B2s"
+    },
+    "vmAdminUsername": {
+      "value": "tesuser"
+    },
+    "vmAdminPassword": {
+      "value": "Password@123"
+    },
+    "windowsOSVersion": {
+      "value": "2012-R2-Datacenter"
+    },
+    "WindowNSGrules": {
+      "value": {
+        "NSG": {
+          "name": "RDP",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "500",
+          "direction": "Inbound"
+        }
+      }
+    }
+  }
+}

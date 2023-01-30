@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageSkuTier": {
+      "type": "string"
+    },
+    "storageAccountSkuName": {
+      "type": "string"
+    },
+    "resourceTags": {
+      "type": "object"
+    },
+    "storageKind": {
+      "type": "string"
+    },
+    "supportsHttpsTrafficOnly": {
+      "type": "bool"
+    },
+    "fileEnabled": {
+      "type": "bool"
+    },
+    "blobEnabled": {
+      "type": "bool"
+    },
+    "accessTier": {
+      "type": "string"
+    },
+    "isHnsEnabled": {
+      "type": "bool"
+    },
+    "containers": {
+      "type": "array"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[resourceGroup().Location]",
+      "tags": "[parameters('resourceTags')]",
+      "sku": {
+        "name": "[parameters('storageAccountSkuName')]",
+        "tier": "[parameters('storageSkuTier')]"
+      },
+      "kind": "[parameters('storageKind')]",
+      "properties": {
+        "isHnsEnabled": "[parameters('isHnsEnabled')]",
+        "supportsHttpsTrafficOnly": "[parameters('supportsHttpsTrafficOnly')]",
+        "services": {
+          "file": {
+            "enabled": "[parameters('fileEnabled')]"
+          },
+          "blob": {
+            "enabled": "[parameters('blobEnabled')]"
+          }
+        },
+        "accessTier": "[parameters('accessTier')]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(parameters('storageAccountName'), '/default','/', parameters('containers')[copyIndex()])]",
+      "copy": {
+        "name": "blobIterator",
+        "count": "[length(parameters('containers'))]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subnetdetails": {
+      "value": ["10.0.1.0/24", "10.0.2.0/24"]
+    },
+    "subnetcount": {
+      "value": 2
+    },
+    "vnetname": {
+      "value": "vnetA"
+    },
+    "vnetaddress": {
+      "value": "10.0.0.0/16"
+    },
+    "NSGname": {
+      "value": "NSG2"
+    },
+    "NSGdetails": {
+      "value": {
+        "NSG": {
+          "name": "DenyRDP",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Deny",
+          "priority": "400",
+          "direction": "Inbound"
+        }
+      }
+    }
+  }
+}

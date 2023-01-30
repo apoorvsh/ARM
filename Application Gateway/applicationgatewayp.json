@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "vnetE"
+    },
+    "vnetAddress": {
+      "value": "10.2.0.0/16"
+    },
+    "vnetTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgvnet"
+        }
+      }
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.2.1.0/24"
+    },
+    "applicationGatewayName": {
+      "value": "apoorvaappgateway"
+    },
+    "applicationGatewaySkuName": {
+      "value": "Standard_v2"
+    },
+    "applicationGatewaySkuTier": {
+      "value": "Standard_v2"
+    },
+    "applicationGatewaySkuCapacity": {
+      "value": 2
+    },
+    "frontendPortsPort": {
+      "value": 80
+    },
+    "backendHttpSettingsCollectionPort": {
+      "value": 80
+    },
+    "backendHttpSettingsCollectionProtocol": {
+      "value": "Http"
+    },
+    "CookieBasedAffinity": {
+      "value": "Disabled"
+    },
+    "httpListenersProtocol": {
+      "value": "Http"
+    },
+    "requestRoutingRulesType": {
+      "value": "Basic"
+    },
+    "PublicIpTagsName": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgPublicIp"
+        }
+      }
+    },
+    "publicIpSkuName": {
+      "value": "Standard"
+    },
+    "publicIpSkuTier": {
+      "value": "Regional"
+    },
+    "publicIpAllocationMethod": {
+      "value": "Static"
+    },
+    "applicationGatewayTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgApplicationGateway"
+        }
+      }
+    }
+  }
+}

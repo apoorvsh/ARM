@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "vnetD"
+    },
+    "vnetTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgvnet"
+        }
+      }
+    },
+    "vnetAddress": {
+      "value": "10.5.0.0/16"
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.5.1.0/24"
+    },
+    "adfName": {
+      "value": "apoorvdatafac3300"
+    },
+    "adfTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgadf"
+        }
+      }
+    },
+    "privateEndpointName": {
+      "value": "dataFactoryprivateEndpoint"
+    },
+    "privateEndpointTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgprivateEndpoint"
+        }
+      }
+    },
+    "groupIds": {
+      "value": "dataFactory"
+    },
+    "privateDnsZoneName": {
+      "value": "privatelink.datafactory.azure.net"
+    },
+    "location": {
+      "value": "Global"
+    },
+    "registrationEnabledVnetLinks": {
+      "value": false
+    }
+  }
+}

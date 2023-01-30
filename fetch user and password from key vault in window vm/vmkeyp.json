@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "windowPublicIp": {
+      "value": "WindowPublicIP"
+    },
+    "windowNicName": {
+      "value": "WindowNIC"
+    },
+    "windowNsgName": {
+      "value": "WindowNSGName"
+    },
+    "windowNsgRules": {
+      "value": {
+        "Nsg": {
+          "name": "RDP",
+          "protocol": "TCP",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": "500",
+          "direction": "Inbound"
+        }
+      }
+    },
+    "windowVmName": {
+      "value": "WindowVM"
+    },
+    "windowVmSize": {
+      "value": "Standard_B2s"
+    },
+    "windowComputerName": {
+      "value": "WindowVM"
+    },
+    "windowPublisher": {
+      "value": "MicrosoftWindowsServer"
+    },
+    "windowOffer": {
+      "value": "WindowsServer"
+    },
+    "windowSKU": {
+      "value": "2012-R2-Datacenter"
+    },
+    "windowVersion": {
+      "value": "latest"
+    },
+    "windowOsDisk": {
+      "value": "WindowVMDisk"
+    },
+    "windowCaching": {
+      "value": "ReadWrite"
+    },
+    "windowCreateOption": {
+      "value": "FromImage"
+    },
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/8a21611a-c5d3-4127-a0e2-be72ad32026d/resourceGroups/spokerg/providers/Microsoft.KeyVault/vaults/spokekey"
+        },
+        "secretName": "vmpassword"
+      }
+    },
+    "adminUserName": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/8a21611a-c5d3-4127-a0e2-be72ad32026d/resourceGroups/spokerg/providers/Microsoft.KeyVault/vaults/spokekey"
+        },
+        "secretName": "vmadmin"
+      }
+    },
+    "existingResourceGroup": {
+      "value": "spokerg"
+    },
+    "existingVnetName": {
+      "value": "vnetE"
+    },
+    "existingSubnetName": {
+      "value": "subnetA"
+    }
+  }
+}

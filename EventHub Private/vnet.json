@@ -1,0 +1,136 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "blueprintName": {
+      "type": "String",
+      "metadata": {
+        "description": "The name of the blueprint definition."
+      }
+    },
+    "resourceGroupName": {
+      "type": "object"
+    },
+    "targetScope": {
+      "type": "string"
+    },
+    "roleDefinitionId": {
+      "type": "string"
+    },
+    "principalIds": {
+      "type": "array"
+    },
+     "vnetName": {
+      "type": "string"
+    },
+    "resourceTags": {
+      "type": "object"
+    },
+    "vnetAddress": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "subnetAddress": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Blueprint/blueprints",
+      "apiVersion": "2018-11-01-preview",
+      "name": "[parameters('blueprintName')]",
+      "properties": {
+        "targetScope": "[parameters('targetScope')]",
+        "description": "ARM template",
+        "resourceGroup": "[parameters('resourceGroupName')]",
+        "parameters": {}
+      }
+    },
+    {
+      "type": "Microsoft.Blueprint/blueprints/artifacts",
+      "apiVersion": "2018-11-01-preview",
+      "name": "[concat(parameters('blueprintName'), '/RBACArtifact')]",
+      "kind": "roleAssignment",
+      "dependsOn": ["[parameters('blueprintName')]"],
+      "properties": {
+        "displayName": "Contributor",
+        "principalIds": "[parameters('principalIds')]",
+        "resourceGroup": "[parameters('resourceGroupName')]",
+        "roleDefinitionId": "[parameters('roleDefinitionId')]"
+      }
+    },
+    {
+      "type": "Microsoft.Blueprint/blueprints/artifacts",
+      "apiVersion": "2018-11-01-preview",
+      "name": "[concat(parameters('blueprintName'), '/ARMArtifact')]",
+      "kind": "template",
+      "properties": {
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+              "vnetName": {
+                "type": "string"
+              },
+              "vnetTags": {
+                "type": "object"
+              },
+              "vnetAddress": {
+                "type": "string"
+              },
+              "subnetName": {
+                "type": "string"
+              },
+              "subnetAddress": {
+                "type": "string"
+              }
+          },
+          "resources": [
+            {
+              "name": "[parameters('vnetName')]",
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2018-08-01",
+              "location": "eastus",
+              "tags": "[parameters('resourceTags')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": ["[parameters('vnetAddress')]"]
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks/subnets",
+              "apiVersion": "2018-10-01",
+              "name": "[concat(parameters('vnetName'),'/',parameters('subnetName'))]",
+              "dependsOn": ["[parameters('vnetName')]"],
+              "properties": {
+                "addressPrefix": "[parameters('subnetAddress')]"
+              }
+            }
+          ]
+        },
+        "resourceGroup": "[parameters('resourceGroupName')]",
+        "parameters": {
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          },
+          "vnetTags": {
+            "value": "[parameters('resourceTags')]"
+          },
+          "vnetAddress": {
+            "value": "[parameters('vnetAddress')]"
+          },
+          "subnetName": {
+            "value": "[parameters('subnetName')]"
+          },
+          "subnetAddress": {
+            "value": "[parameters('subnetAddress')]"
+          }
+        }
+      }
+    }
+  ]
+}
+

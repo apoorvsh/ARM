@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "store3300123"
+    },
+    "vnetName": {
+      "value": "VnetA"
+    },
+    "resourceTags": {
+      "value": {
+        "environment": "test"
+      }
+    },
+    "vnetAddress": {
+      "value": "10.7.0.0/16"
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.7.1.0/24"
+    },
+    "storageAccountSkuName": {
+      "value": "Standard_LRS"
+    },
+    "storageSkuTier": {
+      "value": "Standard"
+    },
+    "storageKind": {
+      "value": "StorageV2"
+    },
+    "supportsHttpsTrafficOnly": {
+      "value": true
+    },
+    "fileEnabled": {
+      "value": true
+    },
+    "blobEnabled": {
+      "value": true
+    },
+    "accessTier": {
+      "value": "Hot"
+    },
+    "isHnsEnabled": {
+      "value": true
+    },
+    "privateEndpointName": {
+      "value": "storageAccountPrivateEndpoint"
+    },
+    "groupIds": {
+      "value": "dfs"
+    },
+    "privateDnsZoneName": {
+      "value": "privatelink.dfs.core.windows.net"
+    },
+    "location": {
+      "value": "Global"
+    },
+    "registrationEnabledVnetLinks": {
+      "value": false
+    }
+  }
+}

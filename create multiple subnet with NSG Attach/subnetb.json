@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subnetdetails": {
+      "type": "array"
+    },
+    "vnetname": {
+      "type": "string"
+    },
+    "vnetaddress": {
+      "type": "string"
+    },
+    "subnetcount": {
+      "type": "int"
+    },
+    "NSGdetails": {
+      "type": "object"
+    },
+    "NSGname": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('vnetname')]",
+      "type": "Microsoft.Network/VirtualNetworks",
+      "apiVersion": "2019-09-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["[parameters('vnetaddress')]"]
+        },
+        "copy": [
+          {
+            "name": "subnets",
+            "count": "[parameters('subnetcount')]",
+            "input": {
+              "name": "[concat('subnet-', copyIndex('subnets',0))]",
+              "properties": {
+                "addressPrefix": "[parameters('subnetdetails')[copyIndex('subnets')]]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSGname'))]"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('NSGname')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "[parameters('NSGdetails').NSG.name]",
+            "properties": {
+              "description": "description",
+              "protocol": "[parameters('NSGdetails').NSG.protocol]",
+              "sourcePortRange": "[parameters('NSGdetails').NSG.sourcePortRange]",
+              "destinationPortRange": "[parameters('NSGdetails').NSG.destinationPortRange]",
+              "sourceAddressPrefix": "[parameters('NSGdetails').NSG.sourceAddressPrefix]",
+              "destinationAddressPrefix": "[parameters('NSGdetails').NSG.destinationAddressPrefix]",
+              "access": "[parameters('NSGdetails').NSG.access]",
+              "priority": "[parameters('NSGdetails').NSG.priority]",
+              "direction": "[parameters('NSGdetails').NSG.direction]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

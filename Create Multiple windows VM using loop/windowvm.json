@@ -1,0 +1,179 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceTag": {
+      "type": "object"
+    },
+    "vmCount": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "vmAdminUsername": {
+      "type": "securestring"
+    },
+    "vmAdminPassword": {
+      "type": "securestring"
+    },
+    "windowsOSVersion": {
+      "type": "string"
+    },
+    "WindowNSGrules": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "vnetName": "vnetA",
+    "vnetAddress": "10.6.0.0/16",
+    "subnetName": "default",
+    "subnetAddress": "10.6.1.0/24",
+    "pulicIpName": "windowpublicIp",
+    "nicName": "windowNic",
+    "vmName": "windowVm",
+    "osDiskName": "windowDisk",
+    "imagePublisher": "MicrosoftWindowsServer",
+    "imageOffer": "WindowsServer",
+    "caching": "ReadWrite",
+    "createOption": "FromImage",
+    "version": "latest",
+    "windowNsgName": "windowNsg"
+  },
+  "resources": [
+    {
+      "name": "[variables('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["[variables('vnetAddress')]"]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetAddress')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('windowNsgName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-05-01",
+      "name": "[concat(variables('pulicIpName'),copyIndex(1))]",
+      "tags": "[parameters('resourceTag')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      },
+      "copy": {
+        "name": "publicIpCopy",
+        "count": "[parameters('vmCount')]"
+      }
+    },
+    {
+      "name": "[concat(variables('nicName'),copyIndex(1))]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('pulicIpName'),copyIndex(1)))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[concat('ipconfig',copyIndex(1))]",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('pulicIpName'),copyIndex(1)))]"
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('vnetName'),variables('subnetName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "copy": {
+        "name": "nicCopy",
+        "count": "[parameters('vmCount')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "name": "[concat(variables('windowNsgName'))]",
+      "tags": "[parameters('resourceTag')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "[parameters('WindowNSGrules').NSG.name]",
+            "properties": {
+              "description": "description",
+              "protocol": "[parameters('WindowNSGrules').NSG.protocol]",
+              "sourcePortRange": "[parameters('WindowNSGrules').NSG.sourcePortRange]",
+              "destinationPortRange": "[parameters('WindowNSGrules').NSG.destinationPortRange]",
+              "sourceAddressPrefix": "[parameters('WindowNSGrules').NSG.sourceAddressPrefix]",
+              "destinationAddressPrefix": "[parameters('WindowNSGrules').NSG.destinationAddressPrefix]",
+              "access": "[parameters('WindowNSGrules').NSG.access]",
+              "priority": "[parameters('WindowNSGrules').NSG.priority]",
+              "direction": "[parameters('WindowNSGrules').NSG.direction]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-07-01",
+      "copy": {
+        "name": "nodeCopy",
+        "count": "[parameters('vmCount')]"
+      },
+      "type": "Microsoft.Compute/virtualMachines",
+
+      "name": "[concat(variables('vmName'), copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('resourceTag')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('vmAdminUsername')]",
+          "adminPassword": "[parameters('vmAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[parameters('windowsOSVersion')]",
+            "version": "[variables('version')]"
+          },
+          "osDisk": {
+            "name": "[concat(variables('osDiskName'), copyIndex(1))]",
+            "caching": "[variables('caching')]",
+            "createOption": "[variables('createOption')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'),copyIndex(1)))]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

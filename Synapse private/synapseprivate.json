@@ -1,0 +1,375 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetTags": {
+      "type": "object"
+    },
+    "vnetAddress": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "subnetAddress": {
+      "type": "string"
+    },
+    "synapseName": {
+      "type": "string"
+    },
+    "sqlAdministratorLogin": {
+      "type": "securestring"
+    },
+    "sqlAdministratorLoginPassword": {
+      "type": "securestring"
+    },
+    "synapseTags": {
+      "type": "object"
+    },
+    "dedicatedPoolTags": {
+      "type": "object"
+    },
+    "dedicatedSkuCapacity": {
+      "type": "int"
+    },
+    "dedicatedSkuName": {
+      "type": "string"
+    },
+    "dedicatedSkuTier": {
+      "type": "string"
+    },
+    "privateEndpointName": {
+      "type": "string"
+    },
+    "privateEndpointTags": {
+      "type": "object"
+    },
+    "groupIds": {
+      "type": "string"
+    },
+    "privateDnsZoneName": {
+      "type": "string"
+    },
+    "dedicatedSqlPoolName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "registrationEnabledVnetLinks": {
+      "type": "bool"
+    },
+    "dedicatedPrivateEndpointName": {
+      "type": "string"
+    },
+    "dedicatedPrivateEndpointTags": {
+      "type": "object"
+    },
+    "dedicatedGroupIds": {
+      "type": "string"
+    },
+    "dedicatedPrivateDnsZoneName": {
+      "type": "string"
+    },
+    "privateLinkHubName": {
+      "type": "string"
+    },
+    "privateLinkHubTags": {
+      "type": "object"
+    },
+    "privateLinkHubPrivateEndpointName": {
+      "type": "string"
+    },
+    "privateLinkHubPrivateEndpointTags": {
+      "type": "object"
+    },
+    "privateLinkHubGroupIds": {
+      "type": "string"
+    },
+    "privateLinkHubPrivateDnsZoneName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "accountUrl": "https://store3300.dfs.core.windows.net/",
+    "defaultDataLakeStorageFilesystemName": "data",
+    "privateDnsZoneConfigsName": "synapseprivateDnsZoneConfigs"
+  },
+  "resources": [
+    {
+      "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('vnetTags').tagA]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["[parameters('VnetAddress')]"]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2018-10-01",
+      "name": "[concat(parameters('VnetName'),'/',parameters('subnetName'))]",
+      "dependsOn": ["[parameters('VnetName')]"],
+      "properties": {
+        "addressPrefix": "[parameters('subnetAddress')]"
+      }
+    },
+    {
+      "type": "Microsoft.Synapse/workspaces",
+      "apiVersion": "2019-06-01-preview",
+      "name": "[parameters('synapseName')]",
+      "tags": "[parameters('synapseTags').tagA]",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "sqlAdministratorLogin": "[parameters('sqlAdministratorLogin')]",
+        "sqlAdministratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+        "defaultDataLakeStorage": {
+          "accountUrl": "[variables('accountUrl')]",
+          "filesystem": "[variables('defaultDataLakeStorageFilesystemName')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('privateEndpointName')]",
+      "tags": "[parameters('privateEndpointTags').tagA]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[parameters('privateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseName'))]",
+              "groupIds": ["[parameters('groupIds')]"]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2018-09-01",
+      "name": "[parameters('privateDnsZoneName')]",
+      "location": "[parameters('location')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2018-09-01",
+      "name": "[format('{0}/{1}', parameters('privateDnsZoneName'), format('{0}-link', parameters('privateDnsZoneName')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "registrationEnabled": "[parameters('registrationEnabledVnetLinks')]",
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[format('{0}/mydnsgroupname', parameters('privateEndpointName'))]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "[variables('privateDnsZoneConfigsName')]",
+            "properties": {
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Synapse/workspaces/sqlPools",
+      "apiVersion": "2019-06-01-preview",
+      "name": "[concat(parameters('synapseName'),'/',parameters('dedicatedSqlPoolName'))]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('dedicatedPoolTags').tagA]",
+      "sku": {
+        "capacity": "[parameters('dedicatedSkuCapacity')]",
+        "name": "[parameters('dedicatedSkuName')]",
+        "tier": "[parameters('dedicatedSkuTier')]"
+      },
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('dedicatedPrivateEndpointName')]",
+      "tags": "[parameters('dedicatedPrivateEndpointTags').tagA]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[parameters('dedicatedPrivateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseName'))]",
+              "groupIds": ["[parameters('dedicatedGroupIds')]"]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2018-09-01",
+      "name": "[parameters('dedicatedPrivateDnsZoneName')]",
+      "location": "[parameters('location')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2018-09-01",
+      "name": "[format('{0}/{1}', parameters('dedicatedPrivateDnsZoneName'), format('{0}-link', parameters('dedicatedPrivateDnsZoneName')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "registrationEnabled": "[parameters('registrationEnabledVnetLinks')]",
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('dedicatedPrivateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[format('{0}/mydnsgroupname', parameters('dedicatedPrivateEndpointName'))]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "[variables('privateDnsZoneConfigsName')]",
+            "properties": {
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('dedicatedPrivateDnsZoneName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('dedicatedPrivateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/privateEndpoints', parameters('dedicatedPrivateEndpointName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Synapse/privateLinkHubs",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('privateLinkHubName')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('privateLinkHubTags').tagA]"
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2020-05-01",
+      "name": "[parameters('privateLinkHubPrivateEndpointName')]",
+      "tags": "[parameters('privateLinkHubPrivateEndpointTags').tagA]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[parameters('privateLinkHubPrivateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Synapse/privateLinkHubs', parameters('privateLinkHubName'))]",
+              "groupIds": ["[parameters('privateLinkHubGroupIds')]"]
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Synapse/privateLinkHubs', parameters('privateLinkHubName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2018-09-01",
+      "name": "[parameters('privateLinkHubPrivateDnsZoneName')]",
+      "location": "[parameters('location')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2018-09-01",
+      "name": "[format('{0}/{1}', parameters('privateLinkHubPrivateDnsZoneName'), format('{0}-link', parameters('privateLinkHubPrivateDnsZoneName')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "registrationEnabled": "[parameters('registrationEnabledVnetLinks')]",
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateLinkHubPrivateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2020-05-01",
+      "name": "[format('{0}/mydnsgroupname', parameters('privateLinkHubPrivateEndpointName'))]",
+      "properties": {
+        "privateDnsZoneConfigs": [
+          {
+            "name": "[variables('privateDnsZoneConfigsName')]",
+            "properties": {
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateLinkHubPrivateDnsZoneName'))]"
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateLinkHubPrivateDnsZoneName'))]",
+        "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateLinkHubPrivateEndpointName'))]"
+      ]
+    }
+  ]
+}

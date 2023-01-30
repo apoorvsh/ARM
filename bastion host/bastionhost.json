@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceTag": {
+      "type": "object"
+    },
+    "publicIpSku": {
+      "type": "string"
+    },
+    "publicIPAllocationMethod": {
+      "type": "string"
+    },
+    "existingResourceGrpupName": {
+      "type": "string"
+    },
+    "existingVnetName": {
+      "type": "string"
+    },
+    "existingSubnetName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "bastionHostName": "apoorvBastion",
+    "publicIpAddressName": "bastionPublicIp"
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-05-01",
+      "type": "Microsoft.Network/bastionHosts",
+      "name": "[variables('bastionHostName')]",
+      "tags": "[parameters('resourceTag')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "IpConf",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('existingResourceGrpupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVNETName'),parameters('existingSubnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2019-02-01",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "name": "[variables('publicIpAddressName')]",
+      "tags": "[parameters('resourceTag')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('publicIpSku')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+      }
+    }
+  ],
+  "outputs": {}
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "vnetD"
+    },
+    "vnetTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgvnet"
+        }
+      }
+    },
+    "vnetAddress": {
+      "value": "10.5.0.0/16"
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.5.1.0/24"
+    },
+    "synapseName": {
+      "value": "synapse330012345"
+    },
+    "sqlAdministratorLogin": {
+      "value": "testuser"
+    },
+    "sqlAdministratorLoginPassword": {
+      "value": "Password@123"
+    },
+    "synapseTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgsynapse"
+        }
+      }
+    },
+    "dedicatedPoolTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgDedicatedsqlpool"
+        }
+      }
+    },
+    "dedicatedSqlPoolName": {
+      "value": "apoorvpool"
+    },
+    "dedicatedSkuCapacity": {
+      "value": 100
+    },
+    "dedicatedSkuName": {
+      "value": "DW100c"
+    },
+    "dedicatedSkuTier": {
+      "value": "DW100c"
+    },
+    "privateEndpointName": {
+      "value": "synapseprivateEndpoint"
+    },
+    "privateEndpointTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgprivateEndpoint"
+        }
+      }
+    },
+    "groupIds": {
+      "value": "dev"
+    },
+    "privateDnsZoneName": {
+      "value": "privatelink.dev.azuresynapse.net"
+    },
+    "location": {
+      "value": "Global"
+    },
+    "registrationEnabledVnetLinks": {
+      "value": false
+    },
+    "dedicatedprivateEndpointName": {
+      "value": "dedicatedSqlPoolprivateEndpoint"
+    },
+    "dedicatedPrivateEndpointTags": {
+      "value": {
+        "tagA": {
+          "environment": "hurgdedeicatedSqlPool"
+        }
+      }
+    },
+    "dedicatedGroupIds": {
+      "value": "sql"
+    },
+    "dedicatedPrivateDnsZoneName": {
+      "value": "privatelink.sql.azuresynapse.net"
+    },
+    "privateLinkHubTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgprivatelinkhub"
+        }
+      }
+    },
+    "privateLinkHubPrivateEndpointName": {
+      "value": "privatelinkhub"
+    },
+    "privateLinkHubName": {
+      "value": "synapseprivatelinkhub"
+    },
+    "privateLinkHubPrivateEndpointTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgprivatelinkhub"
+        }
+      }
+    },
+    "privateLinkHubGroupIds": {
+      "value": "web"
+    },
+    "privateLinkHubPrivateDnsZoneName": {
+      "value": "privatelink.azuresynapse.net"
+    }
+  }
+}

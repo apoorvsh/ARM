@@ -1,0 +1,210 @@
+ {
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "dataShareAccountName": {
+      "type": "string"
+    },
+    "dataShareShareName": {
+      "type": "string"
+    },
+    "resourceTag": {
+      "type": "object"
+    },
+    "shareKind": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "string"
+    },
+    "synchronizationSettingsName": {
+      "type": "string"
+    },
+    "synchronizationSettingsKind": {
+      "type": "string"
+    },
+    "syncInterval": {
+      "type": "string"
+    },
+    "storageAccountskuName": {
+      "type": "string"
+    },
+    "storageSkuTier": {
+      "type": "string"
+    },
+    "storageKind": {
+      "type": "string"
+    },
+    "supportsHttpsTrafficOnly": {
+      "type": "bool"
+    },
+    "fileEnabled": {
+      "type": "bool"
+    },
+    "blobEnabled": {
+      "type": "bool"
+    },
+    "accessTier": {
+      "type": "string"
+    },
+    "isHnsEnabled": {
+      "type": "bool"
+    },
+    "containerName": {
+      "type": "string"
+    },
+    "storagePublicAccess": {
+      "type": "string"
+    },
+    "immutableStorageWithVersioning": {
+      "type": "bool"
+    },
+    "storageBlobDataReaderRoleDefinitionId": {
+      "type": "string"
+    },
+    "principalType": {
+      "type": "string"
+    },
+    "syncTime": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyyy-MM-ddTHH:mm:ssZ')]",
+      "metadata": {
+        "description": "Specify snapshot schedule start time."
+      }
+    },
+    "invitationEmail": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "roleAssignmentName": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), parameters('storageBlobDataReaderRoleDefinitionId'), resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName')))]",
+    "inviteName": "[concat('invite', parameters('dataShareShareName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('resourceTag')]",
+      "sku": {
+        "name": "[parameters('storageAccountSkuName')]",
+        "tier": "[parameters('storageSkuTier')]"
+      },
+      "kind": "[parameters('storageKind')]",
+      "properties": {
+        "isHnsEnabled": "[parameters('isHnsEnabled')]",
+        "supportsHttpsTrafficOnly": "[parameters('supportsHttpsTrafficOnly')]",
+        "services": {
+          "file": {
+            "enabled": "[parameters('fileEnabled')]"
+          },
+          "blob": {
+            "enabled": "[parameters('blobEnabled')]"
+          }
+        },
+        "accessTier": "[parameters('accessTier')]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2019-06-01",
+      "name": "[format('{0}/default/{1}', parameters('storageAccountName'), parameters('containerName'))]",
+      "properties": {
+        "publicAccess": "[parameters('storagePublicAccess')]", // Specifies whether data in the container may be accessed publicly and the level of access. 'Blob','Container','None'
+        "immutableStorageWithVersioning": {
+          "enabled": "[parameters('immutableStorageWithVersioning')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+
+    {
+      "type": "Microsoft.DataShare/accounts",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('dataShareAccountName')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('resourceTag')]",
+      "identity": {
+        "type": "[parameters('identity')]"
+      },
+      "properties": {
+        //This object doesn't contain any properties to set during deployment. All properties are ReadOnly.
+      }
+    },
+    {
+      "type": "Microsoft.DataShare/accounts/shares",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('dataShareAccountName'),'/',parameters('dataShareShareName'))]",
+      "properties": {
+        "shareKind": "[parameters('shareKind')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+      "name": "[variables('roleAssignmentName')]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleAssignments', parameters('storageBlobDataReaderRoleDefinitionId'))]",
+        "principalId": "[reference(resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName')), '2021-08-01', 'full').identity.principalId]",
+        "principalType": "[parameters('principalType')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DataShare/accounts/shares/dataSets",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('dataShareAccountName'),'/', parameters('dataShareShareName'),'/', parameters('containerName'))]",
+      "kind": "Container",
+      "properties": {
+        "subscriptionId": "[subscription().subscriptionId]",
+        "resourceGroup": "[resourceGroup().name]",
+        "storageAccountName": "[parameters('storageAccountName')]",
+        "containerName": "[parameters('containerName')]"
+      },
+      "dependsOn": [
+       // "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', split(format('{0}/default/{1}', parameters('storageAccountName'), parameters('containerName')), '/')[0], split(format('{0}/default/{1}', parameters('storageAccountName'), parameters('containerName')), '/')[1], split(format('{0}/default/{1}', parameters('storageAccountName'), parameters('containerName')), '/')[2])]",
+        "[resourceId('Microsoft.DataShare/accounts/shares', parameters('dataShareAccountName'), parameters('dataShareShareName'))]",
+        "[resourceId('Microsoft.DataShare/accounts/shares/invitations', parameters('dataShareAccountName'), parameters('dataShareShareName'), variables('inviteName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.DataShare/accounts/shares/synchronizationSettings', parameters('dataShareAccountName'), parameters('dataShareShareName'), parameters('synchronizationSettingsName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DataShare/accounts/shares/invitations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('dataShareAccountName'),'/', parameters('dataShareShareName'),'/', variables('inviteName'))]",
+      "properties": {
+        "targetEmail": "[parameters('invitationEmail')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DataShare/accounts/shares', parameters('dataShareAccountName'), parameters('dataShareShareName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DataShare/accounts/shares/synchronizationSettings",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('dataShareAccountName'),'/',parameters('dataShareShareName'),'/', parameters('synchronizationSettingsName'))]",
+      "kind": "[parameters('synchronizationSettingsKind')]",
+      "properties": {
+        "recurrenceInterval": "[parameters('syncInterval')]",
+        "synchronizationTime": "[parameters('syncTime')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DataShare/accounts/shares', parameters('dataShareAccountName'), parameters('dataShareShareName'))]"
+      ]
+    }
+  ]
+}

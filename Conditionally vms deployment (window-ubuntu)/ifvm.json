@@ -1,0 +1,350 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetAddressPrefix": {
+      "type": "string"
+    },
+    "windowSubnetName": {
+      "type": "string"
+    },
+    "windowSubnetAddressPrefix": {
+      "type": "string"
+    },
+    "ubuntuSubnetName": {
+      "type": "string"
+    },
+    "ubuntuSubnetAddressPrefix": {
+      "type": "string"
+    },
+    "windowPublicIp": {
+      "type": "string"
+    },
+    "windowNicName": {
+      "type": "string"
+    },
+    "windowNsgName": {
+      "type": "string"
+    },
+    "windowNsgRules": {
+      "type": "object"
+    },
+    "windowVmName": {
+      "type": "string"
+    },
+    "windowVmSize": {
+      "type": "string"
+    },
+    "windowComputerName": {
+      "type": "string"
+    },
+    "windowUserName": {
+      "type": "string"
+    },
+    "windowPassword": {
+      "type": "string"
+    },
+    "windowPublisher": {
+      "type": "string"
+    },
+    "windowOffer": {
+      "type": "string"
+    },
+    "windowSku": {
+      "type": "string"
+    },
+    "windowVersion": {
+      "type": "string"
+    },
+    "windowOsDisk": {
+      "type": "string"
+    },
+    "windowCaching": {
+      "type": "string"
+    },
+    "windowCreateOption": {
+      "type": "string"
+    },
+    "ubuntuPublicIp": {
+      "type": "string"
+    },
+    "ubuntuNicName": {
+      "type": "string"
+    },
+    "ubuntuNsgName": {
+      "type": "string"
+    },
+    "ubuntuNsgRules": {
+      "type": "object"
+    },
+    "ubuntuVmName": {
+      "type": "string"
+    },
+    "ubuntuVmSize": {
+      "type": "string"
+    },
+    "ubuntuComputerName": {
+      "type": "string"
+    },
+    "ubuntuUserName": {
+      "type": "string"
+    },
+    "ubuntuPassword": {
+      "type": "string"
+    },
+    "ubuntuOsDiskName": {
+      "type": "string"
+    },
+    "ubuntuCaching": {
+      "type": "string"
+    },
+    "ubuntuCreateOption": {
+      "type": "string"
+    },
+    "ubuntuPublisher": {
+      "type": "string"
+    },
+    "ubuntuOffer": {
+      "type": "string"
+    },
+    "ubuntuSku": {
+      "type": "string"
+    },
+    "ubuntuVersion": {
+      "type": "string"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["[parameters('vnetAddressPrefix')]"]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('windowSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('windowSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('windowNsgName'))]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('ubuntuSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('ubuntuSubnetAddressPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('ubuntuNsgName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('ubuntuPublicIp')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-05-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "name": "[parameters('ubuntuNicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipConfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('ubuntuPublicIp'))]"
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'),parameters('ubuntuSubnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('ubuntuNsgname')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "[parameters('ubuntuNsgRules').Nsg.name]",
+            "properties": {
+              "description": "description",
+              "protocol": "[parameters('ubuntuNsgRules').Nsg.protocol]",
+              "sourcePortRange": "[parameters('ubuntuNsgRules').Nsg.sourcePortRange]",
+              "destinationPortRange": "[parameters('ubuntuNsgRules').Nsg.destinationPortRange]",
+              "sourceAddressPrefix": "[parameters('ubuntuNsgRules').Nsg.sourceAddressPrefix]",
+              "destinationAddressPrefix": "[parameters('ubuntuNsgRules').Nsg.destinationAddressPrefix]",
+              "access": "[parameters('ubuntuNsgRules').Nsg.access]",
+              "priority": "[parameters('ubuntuNsgRules').Nsg.priority]",
+              "direction": "[parameters('ubuntuNsgRules').Nsg.direction]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('ubuntuSubnetName'), 'UbuntuSubnet')]",
+      "name": "[parameters('ubuntuVmname')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2017-03-30",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('ubuntuNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('ubuntuVmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('ubuntuComputerName')]",
+          "adminUsername": "[parameters('ubuntuUserName')]",
+          "adminPassword": "[parameters('ubuntuPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('ubuntuPublisher')]",
+            "offer": "[parameters('ubuntuOffer')]",
+            "sku": "[parameters('ubuntuSku')]",
+            "version": "[parameters('ubuntuVersion')]"
+          },
+          "osDisk": {
+            "name": "[parameters('ubuntuOsDiskName')]",
+            "caching": "[parameters('ubuntuCaching')]",
+            "createOption": "[parameters('ubuntuCreateOption')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('ubuntuNicName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[parameters('windowPublicIp')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-05-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "name": "[parameters('windowNicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipConfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('windowPublicIp'))]"
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'),parameters('windowSubnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('windowNsgName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "[parameters('windowNsgRules').Nsg.name]",
+            "properties": {
+              "description": "description",
+              "protocol": "[parameters('windowNsgRules').Nsg.protocol]",
+              "sourcePortRange": "[parameters('windowNsgRules').Nsg.sourcePortRange]",
+              "destinationPortRange": "[parameters('windowNsgRules').Nsg.destinationPortRange]",
+              "sourceAddressPrefix": "[parameters('windowNsgRules').Nsg.sourceAddressPrefix]",
+              "destinationAddressPrefix": "[parameters('windowNsgRules').Nsg.destinationAddressPrefix]",
+              "access": "[parameters('windowNsgRules').Nsg.access]",
+              "priority": "[parameters('windowNsgRules').Nsg.priority]",
+              "direction": "[parameters('windowNsgRules').Nsg.direction]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('windowSubnetName'), 'WindowSubnet')]",
+      "name": "[parameters('windowVmName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2017-03-30",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('windowNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('windowVmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('windowComputerName')]",
+          "adminUsername": "[parameters('windowUserName')]",
+          "adminPassword": "[parameters('windowPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('windowPublisher')]",
+            "offer": "[parameters('windowOffer')]",
+            "sku": "[parameters('windowSku')]",
+            "version": "[parameters('windowVersion')]"
+          },
+          "osDisk": {
+            "name": "[parameters('windowOsDisk')]",
+            "caching": "[parameters('windowCaching')]",
+            "createOption": "[parameters('windowCreateOption')]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('windowNicName'))]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

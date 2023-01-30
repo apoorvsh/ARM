@@ -1,0 +1,82 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "VnetA"
+    },
+    "vnetTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgVnet"
+        }
+      }
+    },
+    "vnetAddress": {
+      "value": "10.7.0.0/16"
+    },
+    "subnetName": {
+      "value": "subnetA"
+    },
+    "subnetAddress": {
+      "value": "10.7.1.0/24"
+    },
+    "eventHubSkuName": {
+      "value": "Standard"
+    },
+    "eventHubSkuTier": {
+      "value": "Standard"
+    },
+    "eventHubSkuCapacity": {
+      "value": 1
+    },
+    "eventHubNamespaceName": {
+      "value": "apoorvEventHub"
+    },
+    "evnetHubTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgEventHub"
+        }
+      }
+    },
+    "isAutoInflateEnabled": {
+      "value": false
+    },
+    "maximumThroughputUnits": {
+      "value": 0
+    },
+    "groupIds": {
+      "value": "namespace"
+    },
+    "privateDnsZoneName": {
+      "value": "privatelink.servicebus.windows.net"
+    },
+    "location": {
+      "value": "Global"
+    },
+    "registrationEnabledVnetLinks": {
+      "value": false
+    },
+    "privateEndpointName": {
+      "value": "eventHubPrivate"
+    },
+    "privateDnsZoneConfigsName": {
+      "value": "eventHubPrivateDnsZoneConfig"
+    },
+    "privateEndpointTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgprivateEndpoint"
+        }
+      }
+    },
+    "dnsZoneTags": {
+      "value": {
+        "tagA": {
+          "environment": "hubrgDnsZone"
+        }
+      }
+    }
+  }
+}

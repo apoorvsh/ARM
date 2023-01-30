@@ -1,0 +1,156 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerName": {
+      "type": "string"
+    },
+    "lbTags": {
+      "type": "object"
+    },
+    "inboundNatRulesProtocol": {
+      "type": "string"
+    },
+    "inboundNatRulesFrontendPort": {
+      "type": "int"
+    },
+    "inboundNatRulesBackendPort": {
+      "type": "int"
+    },
+    "enableFloatingIP": {
+      "type": "bool"
+    },
+    "loadBalancingRulesProtocol": {
+      "type": "string"
+    },
+    "loadBalancingRulesFrontendIp": {
+      "type": "int"
+    },
+    "loadBalancingRulesBackendIp": {
+      "type": "int"
+    },
+    "loadBalancingRulesenableFloatingIP": {
+      "type": "bool"
+    },
+    "idleTimeoutInMinutes": {
+      "type": "int"
+    },
+    "probesProtocol": {
+      "type": "string"
+    },
+    "probesPort": {
+      "type": "int"
+    },
+    "probeIntervalInSeconds": {
+      "type": "int"
+    },
+    "numberOfProbes": {
+      "type": "int"
+    },
+    "publicIpTags": {
+      "type": "object"
+    },
+    "publicIPAllocationMethod": {
+      "type": "string"
+    },
+    "lbSku": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "frontendIPConfigurationsName": "frontEndip",
+    "publicIpName": "loadBalancerPublicIp",
+    "inboundNatRulesName": "natRule",
+    "loadBalancingRulesName": "rule1",
+    "probesName": "probleRule1",
+    "backendAddressPoolsName": "[concat(parameters('loadBalancerName'),'-pool')]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('loadBalancerName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('lbTags').tagA]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+      ],
+      "sku": {
+        "name": "[parameters('lbSku')]"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[variables('frontendIPConfigurationsName')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('backendAddressPoolsName')]"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "[variables('inboundNatRulesName')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), variables('frontendIPConfigurationsName'))]"
+              },
+              "protocol": "[parameters('inboundNatRulesProtocol')]",
+              "frontendPort": "[parameters('inboundNatRulesFrontendPort')]",
+              "backendPort": "[parameters('inboundNatRulesBackendPort')]",
+              "enableFloatingIP": "[parameters('enableFloatingIP')]"
+            }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "[variables('loadBalancingRulesName')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), variables('frontendIPConfigurationsName'))]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), variables('backendAddressPoolsName'))]"
+              },
+              "protocol": "[parameters('loadBalancingRulesProtocol')]",
+              "frontendPort": "[parameters('loadBalancingRulesFrontendIp')]",
+              "backendPort": "[parameters('loadBalancingRulesBackendIp')]",
+              "enableFloatingIP": "[parameters('loadBalancingRulesenableFloatingIP')]",
+              "idleTimeoutInMinutes": "[parameters('idleTimeoutInMinutes')]",
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('loadBalancerName'), variables('probesName'))]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[variables('probesName')]",
+            "properties": {
+              "protocol": "[parameters('probesProtocol')]",
+              "port": "[parameters('probesPort')]",
+              "intervalInSeconds": "[parameters('probeIntervalInSeconds')]",
+              "numberOfProbes": "[parameters('numberOfProbes')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('publicIpName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('publicIpTags').tagA]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+      }
+    }
+  ]
+}
