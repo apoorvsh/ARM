@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+        "csName": "[toLower(concat('cs',uniqueString(subscription().id)))]",
+        "hostingMode": "Default",
+        "replicaCount": 1,
+        "partitionCount": 1
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Search/searchServices",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('csName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "replicaCount": "[variables('replicaCount')]",
+                "partitionCount": "[variables('partitionCount')]",
+                "hostingMode": "[variables('hostingMode')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ]
+}

@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "translatorRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "translatorName": {
+            "type": "string",
+            "metadata": {
+                "description": "Translator Name"
+            }
+        }
+    },
+    "variables": {
+        "kind": "TextTranslation",
+        "identity": "SystemAssigned",
+        "defaultAction":"Allow",
+        "publicNetworkAccess": "Enabled"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2022-12-01",
+            "name": "[parameters('translatorName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "kind": "[variables('kind')]",
+            "identity": {
+                "type": "[variables('identity')]"
+            },
+            "properties": {
+                "customSubDomainName": "[parameters('translatorName')]",
+                "networkAcls": {
+                    "defaultAction": "[variables('defaultAction')]",
+                    "virtualNetworkRules": [],
+                    "ipRules": []
+                },
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "restore": "[parameters('translatorRestore')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ],
+    "outputs": {}
+}

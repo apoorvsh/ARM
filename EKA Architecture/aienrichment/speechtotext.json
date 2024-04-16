@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "speechToTextRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "speechToTextName": {
+            "type": "string",
+            "metadata": {
+                "description": "Speech To Text Name"
+            }
+        }
+    },
+    "variables": {
+        "kind": "SpeechServices",
+        "identity": "SystemAssigned",
+        "publicNetworkAccess": "Enabled",
+        "defaultAction": "Allow"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2022-12-01",
+            "name": "[parameters('speechToTextName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "kind": "[variables('kind')]",
+            "identity": {
+                "type": "[variables('identity')]" 
+            },
+            "properties": {
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "customSubDomainName": "[parameters('speechToTextName')]",
+                "networkAcls": {
+                    "defaultAction": "[variables('defaultAction')]"
+                },
+                "restore": "[parameters('speechToTextRestore')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ],
+    "outputs": {}
+}

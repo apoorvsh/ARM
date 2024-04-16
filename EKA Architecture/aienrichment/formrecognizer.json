@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "formRecognizerRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "fromRecognizerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Form Recognizer Name"
+            }
+        }
+    },
+    "variables": {
+        "publicNetworkAccess": "Enabled",
+        "kind": "FormRecognizer",
+        "defaultAction": "Allow",
+        "identitytype": "SystemAssigned"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2022-12-01",
+            "name": "[parameters('fromRecognizerName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "kind": "[variables('kind')]",
+            "identity": {
+                "type": "[variables('identitytype')]"
+            },
+            "properties": {
+                "customSubDomainName": "[parameters('fromRecognizerName')]",
+                "networkAcls": {
+                "defaultAction": "[variables('defaultAction')]"
+                },
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "restore": "[parameters('formRecognizerRestore')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ],
+    "outputs": {}
+}

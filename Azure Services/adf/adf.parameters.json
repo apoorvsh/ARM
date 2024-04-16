@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adfName": {
+            "value": ["adfct2023arm"]
+        },
+        "adfTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "adfAccess": {
+            "value": ["Enabled"]
+        },
+        "vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "pepName": {
+            "value": ["adfPep"] 
+        },
+        "pepTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            } 
+        },
+        "subResource": {
+            "value": ["dataFactory"]
+        }
+    }
+}

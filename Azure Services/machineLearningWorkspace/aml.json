@@ -1,0 +1,304 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "amlWSName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of Machine Learning Workspace"
+            }
+        },
+        "amlTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Machine Learning Workspace"
+            }
+        },
+        "amlIdentity": {
+            "type": "array",
+            "metadata": {
+                "description": "Type of managed service identity (where both SystemAssigned and UserAssigned types are allowed)."
+            }
+        },
+        "amlAccess": {
+            "type": "array",
+            "metadata": {
+                "description": "It represents whether public access is allowed or not for Machine Learning Workpace"
+            }
+        },
+        "appInsightName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of App Insight"
+            }
+        },
+        "appInsightTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned To application insight"
+            }
+        },
+         "appInsightKind": {
+            "type": "array",
+            "metadata": {
+                "description": "The kind of application that this component refers to, used to customize UI. This value is a freeform string, values should typically be one of the following: web, ios, other, store, java, phone."
+            }
+        },
+        "appInsightApplicationType": {
+            "type": "array",
+            "metadata": {
+                "description": "Type of application being monitored."
+            }
+        },
+        "kvName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of Key Vault"
+            }
+        },
+        "kvTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Key Vault"
+            }
+        },
+        "kvSkuFamily": {
+            "type": "array",
+            "metadata": {
+                "description": "Keyvault Sku family"
+            }
+        },
+        "kvSkuName": {
+            "type": "array",
+            "metadata": {
+                "description": "Keyvault Sku Name"
+            }
+        },
+        "saName": {
+            "type": "Array",
+            "metadata": {
+                "description": "Name of storage account"
+            }
+        },
+        "saTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to storage Account"
+            }
+        },
+        "saSku": {
+            "type": "Array",
+            "metadata": {
+                "description": "Storage Account Sku"
+            }
+        },
+        "saKind": {
+            "type": "Array",
+            "metadata": {
+                "description": "Storage Account Kind"
+            }
+        },
+        "saAccess": {
+            "type": "Array",
+            "metadata": {
+                "description": "Allow or disallow public access to all blobs or containers in the storage account"
+            }
+        },
+        "saHns": {
+            "type": "Array",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "vnetName" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+        "pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		}
+    },
+    "variables": {},
+    "resources": [
+		{
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2022-12-01-preview",
+            "name": "[parameters('amlWSName')[copyIndex('amlCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('amlTags')]",
+            "identity": {
+                "type": "[parameters('amlIdentity')[copyIndex('amlCopy')]]" 
+            },
+            "properties": {
+                "applicationInsights": "[resourceId('Microsoft.Insights/components',parameters('appInsightName')[copyIndex('amlCopy')])]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults',parameters('kvName')[copyIndex('amlCopy')])]",
+                "publicNetworkAccess": "[parameters('amlAccess')[copyIndex('amlCopy')]]", 
+                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('amlCopy')])]"
+            },
+            "copy":{
+                "name": "amlCopy",
+                "count" : "[length(parameters('amlWSName'))]"
+            },
+            "dependsOn":[
+                "[resourceId('Microsoft.KeyVault/vaults',parameters('kvName')[copyIndex('amlCopy')])]",
+                "[resourceId('Microsoft.Insights/components',parameters('appInsightName')[copyIndex('amlCopy')])]",
+                "[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('amlCopy')])]"
+            ]
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('appInsightName')[copyIndex('aiCopy')]]",
+            "location": "[resourceGroup().location]",
+            "kind": "[parameters('appInsightKind')[copyIndex('aiCopy')]]",
+            "tags": "[parameters('appInsightTags')]",
+            "properties": {
+                "Application_Type": "[parameters('appInsightApplicationType')[copyIndex('aiCopy')]]"
+            },
+            "copy":{
+                "name": "aiCopy",
+                "count" : "[length(parameters('appInsightName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('kvName')[copyIndex('kvCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('kvTags')]",
+            "properties": {
+                "sku": {
+                    "family": "[parameters('kvSkuFamily')[copyIndex('kvCopy')]]",
+                    "name": "[parameters('kvSkuName')[copyIndex('kvCopy')]]"
+                },  
+                    "tenantId": "[subscription().tenantId]",
+                    "accessPolicies": []
+            },
+            "copy":{
+                "name": "kvCopy",
+                "count" : "[length(parameters('kvName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('saName')[copyIndex('saCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('saTags')]",
+            "sku": {
+                "name": "[parameters('saSku')[copyIndex('saCopy')]]"
+            },
+            "kind": "[parameters('saKind')[copyIndex('saCopy')]]",
+
+            "properties": {
+                "isHnsEnabled": "[parameters('saHns')[copyIndex('saCopy')]]",
+                "publicNetworkAccess": "[parameters('saAccess')[copyIndex('saCopy')]]"
+            },
+			"copy": {
+                "name": "saCopy",
+                "count": "[length(parameters('saName'))]"
+            }
+        },
+        {
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('amlWSName')[copyIndex('pepCopy')])]"
+                		}
+            		}
+        		]
+    		},
+			"copy": {
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]",
+				"[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('amlWSName')[copyIndex('pepCopy')])]"
+			]
+        }	
+    ]
+}

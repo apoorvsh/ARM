@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "kvName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of Key Vault"
+            }
+        },
+        "kvTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Key Vault"
+            }
+        },
+        "kvSkuFamily": {
+            "type": "array",
+            "metadata": {
+                "description": "Keyvault Sku family"
+            }
+        },
+        "kvSkuName": {
+            "type": "array",
+            "metadata": {
+                "description": "Keyvault Sku Name"
+            }
+        }
+        
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('kvName')[copyIndex('kvCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('kvTags')]",
+            "properties": {
+                "sku": {
+                    "family": "[parameters('kvSkuFamily')[copyIndex('kvCopy')]]",
+                    "name": "[parameters('kvSkuName')[copyIndex('kvCopy')]]"
+                },  
+                    "tenantId": "[subscription().tenantId]",
+                    "accessPolicies": []
+            },
+            "copy":{
+                "name": "kvCopy",
+                "count" : "[length(parameters('kvName'))]"
+            }
+        }       
+    ]
+}

@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dbrName": {
+            "value": ["adbct2023arm"] 
+        },
+        "dbrTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "dbrSkuName": {
+            "value": ["premium"]
+        },
+        "managedRGName": {
+            "value": ["manrgct2023arm"]
+        },
+        "vnetName" : {
+            "value" : "vnetct2023arm"
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/24"
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.128/27"]
+        },
+        "pepName": {
+            "value": ["adbUIPep","adbBrowserAuthPep"]
+        },
+        "pepTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "subResource": {
+            "value": ["databricks_ui_api","browser_authentication"]
+        },
+        "dbrAccess": {
+            "value": ["Disabled"]
+        },
+        "dbrNsgRules": {
+            "value": ["NoAzureDatabricksRules"] 
+        },
+        "dbrPublicSubnet": {
+            "value": ["dbrPublicSubnet"]
+        },
+        "dbrPrivateSubnet": {
+            "value": ["dbrPrivateSubnet"]
+        },
+        "dbrNPIP": {
+            "value": [true]
+        },
+        "dbrSubnetName" :{
+            "value": ["dbrPrivateSubnet","dbrPublicSubnet"]
+        },
+        "dbrAddressPrefix" :{
+            "value": ["10.0.0.0/26","10.0.0.64/26"]
+        },
+        "nsgName": {
+            "value": ["dbrNsg-1","dbrNsg-2"]
+        },
+        "nsgTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        }
+
+    }
+}

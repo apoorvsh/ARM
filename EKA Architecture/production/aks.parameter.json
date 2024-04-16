@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "location": {
+        "value": "centralindia"
+      },
+      "aksname": {
+        "value": "eka_aks"
+      },
+      "skuTier": {
+        "value": "Paid"
+      },
+      "dnsprefix": {
+        "value": "myKube-dns"
+      },
+      "networkPlugin": {
+        "value": "kubenet"
+      },
+      "tagValues": {
+        "value": {
+          "Environment": "ARM Template",
+          "Owner": "ARM"
+        }
+      },
+      "skuName": {
+        "value": "Basic"
+      },
+      "loadBalancerSku": {
+        "value": "Standard"
+      },
+      "agentPoolProfielname": {
+        "value": "agentpool"
+      },
+      "vmSize": {
+        "value": "Standard_DS2_v2"
+      }
+    }
+  }

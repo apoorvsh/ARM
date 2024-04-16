@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "storageAccountSKUName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account SKU Name"
+            }
+        },
+        "storageAccountSKUTier": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account SKU Tier"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+
+    },
+    "variables": {
+        "storageAccountName": "[toLower(concat('saa',uniqueString(subscription().id)))]",
+        "storageKind": "StorageV2",
+        "publicNetworkAccess": "Enabled",
+        "allowBlobPublicAccess": true,
+        "networkAcls": {
+            "bypass": "AzureServices",
+            "virtualNetworkRules": [],
+            "ipRules": [],
+            "defaultAction": "Allow"
+        },
+        "accessTier": "Hot",
+        "isHnsEnabled": true
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageAccountSKUName')]",
+                "tier": "[parameters('storageAccountSKUTier')]"
+            },
+            "kind": "[variables('storageKind')]",
+            "properties": {
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "allowBlobPublicAccess": "[variables('allowBlobPublicAccess')]",
+                "networkAcls": "[variables('networkAcls')]",
+                "accessTier": "[variables('accessTier')]",
+                "isHnsEnabled": "[variables('isHnsEnabled')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+
+    ]
+}

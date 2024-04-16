@@ -1,0 +1,149 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"adfName": {
+    		"type": "Array",
+    		"metadata": {
+          		"description": "Name of Data Factory"
+        	}
+      	},
+		"adfTags": {
+			"type": "object",
+			"metadata": {
+          		"description": "Tags Assigned to Data Factory"
+        	}
+		},
+		"adfAccess" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Whether or not public network access is allowed for the data factory."
+			}
+		},
+		"vnetName" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+		"pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		}
+    },
+    "variables": {},
+    "resources": [
+		{
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.DataFactory/factories",
+  			"apiVersion": "2018-06-01",
+  			"name": "[parameters('adfName')[copyIndex('adfCopy')]]",
+  			"location" : "[resourceGroup().location]",
+  			"tags": "[parameters('adfTags')]",
+  			"properties": {
+    			"publicNetworkAccess": "[parameters('adfAccess')[copyIndex('adfCopy')]]"
+			},
+			"copy": {
+                "name": "adfCopy",
+                "count": "[length(parameters('adfName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.DataFactory/factories',parameters('adfName')[copyIndex('pepCopy')])]"
+                		}
+            		}
+        		]
+    		},
+			"copy": {
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]",
+				"[resourceId('Microsoft.DataFactory/factories',parameters('adfName')[copyIndex('pepCopy')])]"
+			]	
+		}
+    ]
+}

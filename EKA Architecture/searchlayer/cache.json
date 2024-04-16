@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location"
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Name"
+            }
+        },
+        "skuFamily": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Family"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "metadata": {
+                "description": "SKU Capacity"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+        "cacheName":"[toLower(concat('cache',uniqueString(subscription().id)))]",
+        "enableNonSslPort": false,
+        "redisVersion": "6"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Cache/Redis",
+            "apiVersion": "2022-06-01",
+            "name": "[variables('cacheName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('skuName')]",
+                    "family": "[parameters('skuFamily')]",
+                    "capacity": "[parameters('skuCapacity')]"
+                },
+                "redisConfiguration": {},
+                "enableNonSslPort": "[variables('enableNonSslPort')]",
+                "redisVersion": "[variables('redisVersion')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ]
+}

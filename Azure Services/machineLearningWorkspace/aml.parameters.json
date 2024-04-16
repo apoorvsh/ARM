@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "amlWSName": {
+            "value": ["amlct2023arm"]
+        },
+        "amlTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "amlIdentity": {
+            "value": ["SystemAssigned"]
+        },
+        "amlAccess": {
+            "value": ["Enabled"]
+        },
+        "appInsightName": {
+            "value": ["appinsightct2023arm"]
+        },
+        "kvName": {
+            "value": ["kvct2023arm"]
+        },
+        "kvTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "kvSkuFamily": {
+            "value": ["A"]
+        },
+        "kvSkuName": {
+            "value": ["Standard"]
+        },
+        "saName": {
+            "value": ["strgct2023arm"]
+        },
+        "saTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "saSku": {
+            "value": ["Standard_LRS"]
+        },
+        "saKind": {
+            "value": ["StorageV2"]
+        },
+        "saAccess": {
+            "value": ["Disabled"]
+        },
+        "saHns": {
+            "value": ["false"] 
+        },
+        "appInsightTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "appInsightKind": {
+            "value": ["web"]
+        },
+        "appInsightApplicationType": {
+            "value": ["web"]
+        },
+        "vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "pepName": {
+            "value": ["amlWSPep"]
+        },
+        "pepTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "subResource": {
+            "value": ["amlworkspace"]
+        }
+    }
+}

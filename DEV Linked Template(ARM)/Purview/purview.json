@@ -1,0 +1,137 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectCode": {
+      "type": "string",
+      "metadata": {
+        "description": "Project Code"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment of Project"
+      }
+    },
+    "combineTags": {
+      "type": "object",
+      "metadata": {
+        "discription": "Combine Resource Tags for All resources"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the data factory."
+      }
+    },
+    "webSubnetRef": {
+      "type": "string",
+      "metadata": {
+        "description": "Referencing Web Subnet Id"
+      }
+    }
+  },
+  "variables": {
+    "purviewName": "[toLower(concat('pview-',parameters('projectCode'),'-',parameters('environment'),'-purview01a1'))]",
+    "accountPrivateEndpointName": "[toLower(concat('pep-',parameters('projectCode'),'-',parameters('environment'),'-account01'))]",
+    "portalPrivateEndpointName": "[toLower(concat('pep-',parameters('projectCode'),'-',parameters('environment'),'-portal01'))]",
+    "accountCustomNetworkInterfaceName": "[toLower(concat('nic',parameters('projectCode'),parameters('environment'),'account01'))]",
+    "portalCustomNetworkInterfaceName": "[toLower(concat('nic',parameters('projectCode'),parameters('environment'),'portal01'))]",
+    "publicNetworkAccess": "Disabled",
+    "managedResourceGroupName": "[concat('managed-rg-',variables('purviewName'))]",
+    "skuName": "Standard",
+    "skuCapacity": 1,
+    "purviewDefaultTag": {
+      "Name": "[variables('purviewName')]"
+    },
+    "accountPrivateEndpointDefaultTag": {
+      "Name": "[variables('accountPrivateEndpointName')]"
+    },
+    "portalPrivateEndpointDefaultTag": {
+      "Name": "[variables('portalPrivateEndpointName')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Purview/accounts",
+      "apiVersion": "2021-07-01",
+      "name": "[variables('purviewName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('purviewDefaultTag'), parameters('combineTags'))]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "name": "[variables('skuName')]",
+        "capacity": "[variables('skuCapacity')]"
+      },
+      "properties": {
+        "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+        "managedResourceGroupName": "[variables('managedResourceGroupName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2021-05-01", // cannot be change if we wii change then custom nic name for private endpoint will not work
+      "name": "[variables('accountPrivateEndpointName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('accountPrivateEndpointDefaultTag'), parameters('combineTags'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Purview/accounts', variables('purviewName'))]"
+      ],
+      "properties": {
+        "subnet": {
+          "id": "[parameters('webSubnetRef')]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[variables('accountPrivateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Purview/accounts', variables('purviewName'))]",
+              "groupIds": ["account"]
+            }
+          }
+        ],
+        "customNetworkInterfaceName": "[variables('accountCustomNetworkInterfaceName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2021-05-01", // cannot be change if we wii change then custom nic name for private endpoint will not work
+      "name": "[variables('portalPrivateEndpointName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('portalPrivateEndpointDefaultTag'), parameters('combineTags'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Purview/accounts', variables('purviewName'))]",
+        "[resourceId('Microsoft.Network/privateEndpoints', variables('accountPrivateEndpointName'))]"
+      ],
+      "properties": {
+        "subnet": {
+          "id": "[parameters('webSubnetRef')]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "name": "[variables('portalPrivateEndpointName')]",
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Purview/accounts', variables('purviewName'))]",
+              "groupIds": ["portal"]
+            }
+          }
+        ],
+        "customNetworkInterfaceName": "[variables('portalCustomNetworkInterfaceName')]"
+      }
+    }
+  ],
+  "outputs": {
+    "managedStorageAccountNameId": {
+      "type": "string",
+      "value": "[reference(variables('purviewName')).managedResources.storageAccount]"
+    },
+    "managedEventHubNameSpaceId": {
+      "type": "string",
+      "value": "[reference(variables('purviewName')).managedResources.eventHubNamespace]"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlDBName": {
+            "value": ["sqldbct2023arm"]
+        },
+        "sqlDBTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "sqlDBSkuName": {
+            "value": ["Basic"]
+        },
+        "sqlDBCollation": {
+            "value": ["SQL_Latin1_General_CP1_CI_AS"]
+        },
+        "sqlServerName": {
+            "value": ["sqlserverct2023arm"]
+        },
+        "sqlServerTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "sqlServerAdminUser": {
+            "value": ["ctuser2013arm"]
+        },
+        "sqlServerAdminPassword": {
+            "value": ["CTuser2013#arm"]
+        },
+        "sqlServerTlsVersion": {
+            "value": ["1.2"]
+        },
+        "sqlServerAccess": {
+            "value": ["Disabled"]
+        },
+        "sqlServerVersion": {
+            "value": ["12.0"]
+        },
+        "vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "pepName": {
+            "value": ["sqlServerPep"]
+        },
+        "pepTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "subResource": {
+            "value": ["sqlServer"]
+        }
+    }
+}

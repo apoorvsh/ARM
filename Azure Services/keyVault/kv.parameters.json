@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kvName": {
+            "value": ["kvct2023arm"]
+        },
+        "kvTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "kvSkuFamily": {
+            "value": ["A"]
+        },
+        "kvSkuName": {
+            "value": ["Standard"]
+        }
+    }
+
+}

@@ -1,0 +1,124 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "nsgName": {
+            "value": ["nsgct2023arm"]
+        },
+        "nsgTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "nsgRuleName": {
+            "value": ["RDP"]
+        },
+        "nsgProtocol": {
+            "value": ["TCP"]
+        },
+        "nsgSourcePortRange": {
+            "value": ["*"]
+        },
+        "nsgDestinationPortRange": {
+            "value": ["3389"]
+        },
+        "nsgSourceAddressPrefix": {
+            "value": ["*"]
+        },
+        "nsgDestinationAddressPrefix": {
+            "value": ["*"]
+        },
+        "nsgAccess": {
+            "value": ["Allow"]
+        },
+        "nsgPriority": {
+            "value": ["300"]
+        },
+        "nsgDirection": {
+            "value": ["Inbound"]
+        },
+        "nsgDescription": {
+            "value": ["Network Security Group Rule to enable RDP"]
+        },
+        "nicName": {
+            "value": ["nicct2023arm"]
+        },
+        "nicTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "nicIPConfigName": {
+            "value": ["nicconfigct2023arm"]
+        },
+        "nicIPAllocationMethod": {
+            "value": ["Dynamic"]
+        },
+        "vmName": {
+            "value": ["vmct2023arm"]
+        },
+        "vmTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vmSize": {
+            "value": ["Standard_DS1_v2"]
+        },
+        "adminPassword": {
+            "value": ["ctuser1729@123"]
+        },
+        "adminUsername": {
+            "value": ["ctuser"]
+        },
+        "vmOffer": {
+            "value": ["WindowsServer"]
+        },
+        "vmPublisher": {
+            "value": ["MicrosoftWindowsServer"]
+        },
+        "vmSku": {
+            "value": ["2019-datacenter-gensecond"]
+        },
+        "vmVersion": {
+            "value": ["latest"]
+        },
+        "createOption": {
+            "value": ["fromImage"]
+        },
+        "storageAccountType": {
+            "value": ["Standard_LRS"]
+        },
+        "osDiskName": {
+            "value": ["osdiskct2023arm"]
+        },
+        "pipName": {
+            "value": ["pipct2023arm"]
+        },
+        "pipAllocation": {
+            "value": ["Dynamic"]
+        }
+       
+    }
+}

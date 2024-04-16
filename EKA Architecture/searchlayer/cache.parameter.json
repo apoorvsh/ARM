@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "Central India" 
+        },
+        "skuName": {
+            "value": "Standard" 
+        },
+        "skuFamily": {
+            "value": "C" 
+        },
+        "skuCapacity": {
+            "value": 1 
+        },
+        "tagValues": {
+            "value": {
+                "Environment":"ARM Template",
+                "Owner":"ARM"
+            }
+        }
+    }
+}

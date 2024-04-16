@@ -1,0 +1,801 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for Resources"
+            }
+        },
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Environment"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "synapseSQLAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Synapse SQL Administrator Login"
+            }
+        },
+        "synapseSQLAdministratorLoginPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Synapse SQL Administrator Login Password"
+            }
+        },
+        "synapseStorageAccountSKUName": {
+            "type": "string",
+            "metadata": {
+                "description": "Synapse Storage Account SKU Name"
+            }
+        },
+        "synapseStorageAccountSKUTier": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account SKU Tier"
+            }
+        },
+        "dataFactoryName": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure Data Factory Name"
+            }
+        },
+        "logicAppName": {
+            "type": "string",
+            "metadata": {
+                "description": "Logic App Name"
+            }
+        },
+        "ADLSStorageAccountSKUName": {
+            "type": "string",
+            "metadata": {
+                "description": "ADLS Storage Account SKU Name"
+            }
+        },
+        "ADLSStorageAccountSKUTier": {
+            "type": "string",
+            "metadata": {
+                "description": "ADLS Storage Account SKU Tier"
+            }
+        },
+        "blobSkuName": {
+            "type": "string",
+            "metadata": {
+                "description": "Blob SKU Name"
+            }
+        },
+        "blobSkuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "Blob Sku Tier"
+            }
+        },
+        "sqlAdminLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Admin Login"
+            }
+        },
+        "sqlAdminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "SQl Admin Password"
+            }
+        },
+        "SqlDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Sql Database Name"
+            }
+        },
+        "sqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server Name"
+            }
+        },
+        "fromRecognizerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Form Recognizer Name"
+            }
+        },
+        "formRecognizerSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "Form Recognizer SKU"
+            }
+        },
+        "formRecognizerRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "speechToTextName": {
+            "type": "string",
+            "metadata": {
+                "description": "Speech To Text Name"
+            }
+        },
+        "translatorName": {
+            "type": "string",
+            "metadata": {
+                "description": "Translator Name"
+            }
+        },
+        "trnalatorSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "Translator SKU"
+            }
+        },
+        "translatorRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "mlWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "ML Workspace Name"
+            }
+        },
+        "mlWorkspaceSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "ML Workspace SKU"
+            }
+        },
+        "mlStorageAccountType": {
+            "type": "string",
+            "metadata": {
+                "description": "ML Storage Account Type"
+            }
+        },
+        "mlKeyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "ML Key Vault Name"
+            }
+        },
+        "mlKeyVaultSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "ML Key Vault SKU"
+            }
+        },
+        "applicationInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Application Insights Name"
+            }
+        },
+        "appInsightsLogWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "App InsightsLog Workspace Name"
+            }
+        },
+        "speechToTextsku": {
+            "type": "string",
+            "metadata": {
+                "description": "Speech To Text SKU"
+            }
+        },
+        "speechToTextRestore": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If creating for first time take value as false otherwise true"
+            }
+        },
+        "congnitiveSearchSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "Congnitive Search SKU"
+            }
+        },
+        "redisCahceSKUCapacity": {
+            "type": "int",
+            "metadata": {
+                "description": "Redis Cahce SKU Capacity"
+            }
+        },
+        "redisCacheSKUFamily": {
+            "type": "string",
+            "metadata": {
+                "description": "Redis Cache SKU Family"
+            }
+        },
+        "redisCacheSkuName": {
+            "type": "string",
+            "metadata": {
+                "description": "Redis Cache Sku Name"
+            }
+        },
+        "acrName": {
+            "type": "string",
+            "metadata": {
+                "description": "ACR Name"
+            }
+        },
+        "acrSku": {
+            "type": "string",
+            "metadata": {
+                "description": "ACR Sku"
+            }
+        },
+        "aksAgentPoolProfileName": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Agent Pool Profile Name"
+            }
+        },
+        "aksname": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Name"
+            }
+        },
+        "aksDNSprefix": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS DNS Prefix"
+            }
+        },
+        "aksLoadBalancerSku": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Load Balancer SKU"
+            }
+        },
+        "aksNetworkPlugin": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Network Plugin"
+            }
+        },
+        "aksSKUName": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS SKU Name"
+            }
+        },
+        "aksSkuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Sku Tier"
+            }
+        },
+        "aksVMSize": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS VM Size"
+            }
+        }
+    },
+    "variables": {
+        "rgName":"eka_infra_deployment"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "location": "[parameters('location')]",
+            "name": "[variables('rgName')]",
+            "tags": "[parameters('tagValues')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "synapse",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "datamovement/synapse.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": {
+                        "value": "[parameters('environment')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "containerName": {
+                        "value": "container" 
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('synapseSQLAdministratorLogin')]" 
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('synapseSQLAdministratorLoginPassword')]" 
+                    },
+                    "storageAccountSKUName": {
+                        "value": "[parameters('synapseStorageAccountSKUName')]" 
+                    },
+                    "storageAccountSKUTier": {
+                        "value": "[parameters('synapseStorageAccountSKUTier')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "adf",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink":{
+                    "relativePath": "datamovement/adf.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "dataFactoryName": {
+                        "value": "[parameters('dataFactoryName')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "logicapp",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "datamovement/logicapp.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logicAppName": {
+                        "value": "[parameters('logicAppName')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "adls",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "datastorage/adls.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "storageAccountSKUName": {
+                        "value": "[parameters('ADLSStorageAccountSKUName')]" 
+                    },
+                    "storageAccountSKUTier": {
+                        "value": "[parameters('ADLSStorageAccountSKUTier')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "blob",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "datastorage/blobstorage.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "skuName": {
+                        "value": "[parameters('blobSkuName')]" 
+                    },
+                    "skuTier": {
+                        "value": "[parameters('blobSkuTier')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    },
+                    "containerName": {
+                        "value": "container" 
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "sql",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "datastorage/sql.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminLogin": {
+                        "value": "[parameters('sqlAdminLogin')]" 
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('sqlAdminPassword')]" 
+                    },
+                    "SqlDatabaseName": {
+                        "value": "[parameters('SqlDatabaseName')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('sqlServerName')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "formrecognizer",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "aienrichment/formrecognizer.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sku": {
+                        "value": "[parameters('formRecognizerSKU')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    },
+                    "formRecognizerRestore": {
+                        "value": "[parameters('formRecognizerRestore')]"
+                    },
+                    "fromRecognizerName": {
+                        "value": "[parameters('fromRecognizerName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "translator",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "aienrichment/translator.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sku": {
+                        "value": "[parameters('trnalatorSKU')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    },
+                    "translatorRestore": {
+                        "value": "[parameters('translatorRestore')]"
+                    },
+                    "translatorName": {
+                        "value": "[parameters('translatorName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "mlworkspace",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "aienrichment/mlworkspace.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appInsightsLogWorkspaceName": {
+                        "value": "[parameters('appInsightsLogWorkspaceName')]" 
+                    },
+                    "applicationInsightsName": {
+                        "value": "[parameters('applicationInsightsName')]"
+                    },
+                    "keyVaultName": {
+                        "value": "[parameters('mlKeyVaultName')]" 
+                    },
+                    "keyVaultSKU": {
+                        "value": "[parameters('mlKeyVaultSKU')]" 
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "mlWorkspaceSKU": {
+                        "value": "[parameters('mlWorkspaceSKU')]" 
+                    },
+                    "storageAccountType": {
+                        "value": "[parameters('mlStorageAccountType')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    },
+                    "workspaceName": {
+                        "value": "[parameters('mlWorkspaceName')]" 
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "speechtotext",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "aienrichment/speechtotext.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sku": {
+                        "value": "[parameters('speechToTextsku')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    },
+                    "speechToTextRestore": {
+                        "value": "[parameters('speechToTextRestore')]"
+                    },
+                    "speechToTextName": {
+                        "value": "[parameters('speechToTextName')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "cognitivesearch",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "searchlayer/cognitivesearch.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sku": {
+                        "value": "[parameters('congnitiveSearchSKU')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "rediscache",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "searchlayer/cache.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "skuCapacity": {
+                        "value": "[parameters('redisCahceSKUCapacity')]"
+                    },
+                    "skuFamily": {
+                        "value": "[parameters('redisCacheSKUFamily')]" 
+                    },
+                    "skuName": {
+                        "value": "[parameters('redisCacheSkuName')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },/*
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "openai",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "searchlayer/openai.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+
+                }
+            }
+        },*/
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "acr",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "production/acr.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "acrName": {
+                        "value": "[parameters('acrName')]" 
+                    },
+                    "sku": {
+                        "value": "[parameters('acrSku')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "aks",
+            "resourceGroup": "[variables('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": "production/aks.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "agentPoolProfielname": {
+                        "value": "[parameters('aksAgentPoolProfileName')]" 
+                    },
+                    "aksname": {
+                        "value": "[parameters('aksname')]" 
+                    },
+                    "dnsprefix": {
+                        "value": "[parameters('aksDNSprefix')]" 
+                    },
+                    "loadBalancerSku": {
+                        "value": "[parameters('aksLoadBalancerSku')]" 
+                    },
+                    "networkPlugin": {
+                        "value": "[parameters('aksNetworkPlugin')]" 
+                    },
+                    "skuName": {
+                        "value": "[parameters('aksSKUName')]" 
+                    },
+                    "skuTier": {
+                        "value": "[parameters('aksSkuTier')]" 
+                    },
+                    "vmSize": {
+                        "value": "[parameters('aksVMSize')]" 
+                    },
+                    "tagValues": {
+                        "value": "[parameters('tagValues')]"
+                    }
+                }
+            }
+        }
+
+    ],
+    "outputs": {}
+}

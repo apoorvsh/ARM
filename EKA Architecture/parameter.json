@@ -1,0 +1,150 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "Central India" 
+        },
+        "environment": {
+            "value": "armtemplate" 
+        },
+        "tagValues": {
+            "value": {
+                "Environment":"ARM Template",
+                "Owner":"ARM"
+            }
+        },
+        "synapseSQLAdministratorLogin": {
+            "value": "sqladmin" 
+        },
+        "synapseSQLAdministratorLoginPassword": {
+            "value": "password@123" 
+        },
+        "synapseStorageAccountSKUName": {
+            "value": "Standard_RAGRS" 
+        },
+        "synapseStorageAccountSKUTier": {
+            "value": "Standard" 
+        },
+        "dataFactoryName": {
+            "value": "everiseadf"
+        },
+        "logicAppName": {
+            "value": "everisewapp" 
+        },
+        "ADLSStorageAccountSKUName": {
+            "value": "Standard_RAGRS" 
+        },
+        "ADLSStorageAccountSKUTier": {
+            "value": "Standard" 
+        },
+        "blobSkuName": {
+            "value": "Standard_RAGRS" 
+        },
+        "blobSkuTier": {
+            "value": "Standard" 
+        },
+        "sqlAdminLogin": {
+            "value": "sqladmin" 
+        },
+        "sqlAdminPassword": {
+            "value": "password@123" 
+        },
+        "SqlDatabaseName": {
+            "value": "everisesqldb"
+        },
+        "sqlServerName": {
+            "value": "everrisesqlserver" 
+        },
+        "fromRecognizerName": {
+            "value": "everisefr" 
+        },
+        "formRecognizerSKU": {
+            "value": "F0" 
+        },
+        "formRecognizerRestore": {
+            "value": true
+        },
+        "translatorName": {
+            "value": "everisetrn" 
+        },
+        "trnalatorSKU": {
+            "value": "F0" 
+        },
+        "translatorRestore": {
+            "value": true
+        },
+        "mlWorkspaceName": {
+            "value": "mymlws" 
+        },
+        "mlWorkspaceSKU": {
+            "value": "Basic" 
+        },
+        "mlStorageAccountType": {
+            "value": "Standard_LRS" 
+        },
+        "mlKeyVaultName": {
+            "value": "everisekeyvault124" 
+        },
+        "mlKeyVaultSKU": {
+            "value": "Standard" 
+        },
+        "applicationInsightsName": {
+            "value": "myapp" 
+        },
+        "appInsightsLogWorkspaceName": {
+            "value": "myappws" 
+        },
+        "speechToTextName": {
+            "value": "everisesst" 
+        },
+        "speechToTextsku": {
+            "value": "F0" 
+        },
+        "speechToTextRestore": {
+            "value": true
+        },
+        "congnitiveSearchSKU": {
+            "value": "standard" 
+        },
+        "redisCahceSKUCapacity": {
+            "value": 1
+        },
+        "redisCacheSKUFamily": {
+            "value": "C" 
+        },
+        "redisCacheSkuName": {
+            "value": "Standard" 
+        },
+        "acrName": {
+            "value": "azureacr8" 
+        },
+        "acrSku": {
+            "value": "Standard" 
+        },
+        "aksAgentPoolProfileName": {
+            "value": "agentpool" 
+        },
+        "aksname": {
+            "value": "eka_aks" 
+        },
+        "aksDNSprefix": {
+            "value": "myKube-dns" 
+        },
+        "aksLoadBalancerSku": {
+            "value": "Standard" 
+        },
+        "aksNetworkPlugin": {
+            "value": "kubenet" 
+        },
+        "aksSKUName": {
+            "value": "Basic" 
+        },
+        "aksSkuTier": {
+            "value": "Paid" 
+        },
+        "aksVMSize": {
+            "value": "Standard_DS2_v2" 
+        }
+    }
+}

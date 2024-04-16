@@ -1,0 +1,223 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "vnetName" : {
+			"type" : "array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+        "sqlDBName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of SQL Database"
+            }
+        },
+        "sqlDBTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to SQL Database"
+            }
+        },
+        "sqlDBSkuName": {
+            "type": "array",
+            "metadata": {
+                "description": "SKU of SQL DB"
+            }
+        },
+        "sqlDBCollation": {
+            "type": "array",
+            "metadata": {
+                "description": "Collation of SQL Database"
+            }
+        },
+        "sqlServerName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of SQL Server"
+            }
+        },
+        "sqlServerTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to SQL Server"
+            }
+        },
+        "sqlServerAdminUser": {
+            "type": "array",
+            "metadata": {
+                "description": "Administrator username for the server"
+            }
+        },
+        "sqlServerAdminPassword": {
+            "type": "array",
+            "metadata": {
+                "description": "The administrator login password"
+            }
+        },
+        "sqlServerTlsVersion": {
+            "type": "array",
+            "metadata": {
+                "description": "Minimal TLS version"
+            }
+        },
+        "sqlServerAccess": {
+            "type": "array",
+            "metadata": {
+                "description": "Whether or not public endpoint access is allowed for this server"
+            }
+        },
+        "sqlServerVersion": {
+            "type": "array",
+            "metadata": {
+                "description": "The version of the server"
+            }
+        },
+        "pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		}
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2022-05-01-preview",
+            "name": "[concat(parameters('sqlServerName')[copyIndex('sqlCopy')],'/',parameters('sqlDBName')[copyIndex('sqlCopy')])]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('sqlDBTags')]",
+            "sku": {
+                "name": "[parameters('sqlDBSkuName')[copyIndex('sqlCopy')]]"
+            },
+            "properties": {
+                "collation": "[parameters('sqlDBCollation')[copyIndex('sqlCopy')]]"
+            },
+            "copy":{
+                "name": "sqlCopy",
+                "count" : "[length(parameters('sqlDBName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName')[copyIndex('sqlCopy')])]"
+            ]
+        },
+        {
+             "type": "Microsoft.Sql/servers",
+            "apiVersion": "2022-05-01-preview",
+            "name": "[parameters('sqlServerName')[copyIndex('sqlServerCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('sqlServerTags')]",
+            "properties": {
+                "administratorLogin": "[parameters('sqlServerAdminUser')[copyIndex('sqlServerCopy')]]",
+                "administratorLoginPassword": "[parameters('sqlServerAdminPassword')[copyIndex('sqlServerCopy')]]",
+                "minimalTlsVersion": "[parameters('sqlServerTlsVersion')[copyIndex('sqlServerCopy')]]",
+                "publicNetworkAccess": "[parameters('sqlServerAccess')[copyIndex('sqlServerCopy')]]",
+                "version": "[parameters('sqlServerVersion')[copyIndex('sqlServerCopy')]]"
+            },
+            "copy":{
+                "name" : "sqlServerCopy",
+                "count": "[length(parameters('sqlServerName'))]"
+            }
+        },
+        {
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.Sql/servers',parameters('sqlServerName')[copyIndex('pepCopy')])]"
+                		}
+            		}
+        		]
+    		},
+			"copy": {
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.Sql/servers',parameters('sqlServerName')[copyIndex('pepCopy')])]"
+				
+			]	
+		}
+		
+		
+    ]
+}

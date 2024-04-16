@@ -1,0 +1,138 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "pepName": {
+            "value": ["synapseWSPep"]
+        },
+        "pepTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "subResource": {
+            "value": ["Sql"]
+        },
+        "synapseWSName": {
+            "value": ["synws2023arm"]
+        },
+        "synapseWSTags": {
+            "value":{
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "synapseIdentity": {
+            "value": ["SystemAssigned"]
+        },
+        "synapseAccess": {
+            "value": ["Enabled"]
+        },
+        "synapseAdminLogin": {
+            "value": ["ctuserarm"]
+        },
+        "synapseAdminLoginPassword": {
+            "value": ["userCT2023arm"]
+        },
+        "saName": {
+            "value": ["strgct2k23arm"]
+        },
+        "saTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "saSku": {
+            "value": ["Standard_LRS"]
+        },
+        "saKind": {
+            "value": ["StorageV2"]
+        },
+        "saAccess": {
+            "value": ["Disabled"]
+        },
+        "saHns": {
+            "value": ["true"] 
+        },
+        "dataLakeStorageFilesystemName": {
+            "value": ["adlsct2023arm"]
+        },
+        "dataLakeStorageFilesystemAccess": {
+            "value": ["None"]
+        },
+        "createManagedPrivateEndpoint": {
+            "value": ["false"]
+        },
+        "synapseSqlPoolName": {
+            "value": ["sqlpoolct2023arm"]
+        },
+        "synapseSqlPoolTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "synapseSqlPoolCreateMode": {
+            "value": ["Default"]
+        },
+        "synapseSqlPoolSku": {
+            "value": ["DW100c"]
+        },
+        "synapseSparkPoolName": {
+            "value": ["sparkpoolct2023arm"]
+        },
+        "synapseSparkPoolTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "synapseSparkPoolNodecount": {
+            "value": ["3"]
+        },
+        "synapseSparkPoolNodeSize": {
+            "value": ["Small"]
+        },
+        "synapseSparkPoolNodeSizeFamily": {
+            "value": ["MemoryOptimized"]
+        },
+        "sparkVersion": {
+            "value": ["3.3"]
+        },
+        "sparkAutoScaleEnabled": {
+            "value": ["true"]
+        },
+        "sparkMaxNodeCount": {
+            "value": ["10"]
+        },
+        "sparkMinNodeCount": {
+            "value": ["3"]
+        },
+        "sparkAutoPauseEnabled": {
+            "value": ["true"]
+        },
+        "sparkAutoPauseDelayInMinutes": {
+            "value": ["15"]
+        }
+    }
+}

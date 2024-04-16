@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cvName": {
+            "value": ["cvct2023arm"]
+        },
+        "cvTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "cvSkuName": {
+            "value": ["F0"]
+        },
+        "cvKind": {
+            "value": ["CustomVision.Training"]
+        },
+        "cvCustomSubDomainName": {
+            "value": ["cvcdct2023arm"]
+        },
+        "cvAccess": {
+            "value": ["Disabled"]
+        },"vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "pepName": {
+            "value": ["cvPep"] 
+        },
+        "pepTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            } 
+        },
+        "subResource": {
+            "value": ["account"]
+        }
+        
+    }
+    
+}

@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "sqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Server Name"
+            }
+        },
+        "SqlDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Database Name"
+            }
+        },
+        "adminLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin Login"
+            }
+        },
+        "adminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin Password"
+            }
+        }
+
+    },
+    "variables": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "edition": "Basic",
+        "maxSizeBytes": "1073741824",
+        "requestedServiceObjectiveName": "Basic",
+        "kind": "Managed"
+    },
+    "resources": [
+        {
+            "name": "[parameters('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2014-04-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "version": "12.0",
+                "administratorLogin": "[parameters('adminLogin')]",
+                "administratorLoginPassword": "[parameters('adminPassword')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        },
+
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-02-01-preview",
+            "name": "[concat(parameters('SqlServerName'), '/', parameters('SqlDatabaseName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('SqlServerName'))]"
+            ],
+            "properties": {
+                "collation": "[variables('collation')]",
+                "edition": "[variables('edition')]",
+                "maxSizeBytes": "[variables('maxSizeBytes')]",
+                "requestedServiceObjectiveName": "[variables('requestedServiceObjectiveName')]",
+                "kind": "[variables('kind')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ]
+}

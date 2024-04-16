@@ -1,0 +1,136 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Environment"
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for Resources"
+            }
+        },
+        "containerName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Admininstrator Login "
+            }
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "SQL Administrator Login Password"
+            }
+        },
+        "storageAccountSKUName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account SKU Name"
+            }
+        },
+        "storageAccountSKUTier": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account SKU Tier"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+       "synapseWorkspaceName": "[toLower(concat('synapse',uniqueString(subscription().id)))]",
+        "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('storageAccountName'), '.dfs.core.windows.net')]",
+        "storageAccountContainerName": "[parameters('containerName')]",
+        "managedResourceGroupName": "[toLower(concat('managedRG',parameters('environment')))]",
+        "azureADOnlyAuthentication": true,
+        "storageAccountName": "[toLower(concat('sta',uniqueString(subscription().id)))]",
+        "storageKind": "StorageV2",
+        "publicNetworkAccess": "Enabled",
+        "allowBlobPublicAccess": true,
+        "networkAcls": {
+            "bypass": "AzureServices",
+            "virtualNetworkRules": [],
+            "ipRules": [],
+            "defaultAction": "Allow"
+        },
+        "accessTier": "Hot",
+        "publicAccess": "Blob",
+        "storageAccountID": "[resourceId('Microsoft.Storage/storageAccounts',variables('storageAccountName'))]",
+        "isHnsEnabled": true
+
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[variables('synapseWorkspaceName')]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "defaultDataLakeStorage": {
+                    "accountUrl": "[variables('defaultDataLakeStorageAccountUrl')]",
+                    "filesystem": "[variables('storageAccountContainerName')]",
+                    "resourceId": "[variables('storageAccountID')]"
+                },
+                "sqlAdministratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "sqlAdministratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+                "managedResourceGroupName": "[variables('managedResourceGroupName')]",
+                "azureADOnlyAuthentication": "[variables('azureADOnlyAuthentication')]"
+            },
+            "tags": "[parameters('tagValues')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ]
+        },
+        
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageAccountSKUName')]",
+                "tier": "[parameters('storageAccountSKUTier')]"
+            },
+            "kind": "[variables('storageKind')]",
+            "properties": {
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "allowBlobPublicAccess": "[variables('allowBlobPublicAccess')]",
+                "networkAcls": "[variables('networkAcls')]",
+                "accessTier": "[variables('accessTier')]",
+                "isHnsEnabled": "[variables('isHnsEnabled')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2022-09-01",
+            "name": "[concat('/',variables('storageAccountName'), '/default/',parameters('containerName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "publicAccess": "[variables('publicAccess')]"
+            }
+        }
+
+    ]
+}

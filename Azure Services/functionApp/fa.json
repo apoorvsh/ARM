@@ -1,0 +1,184 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "faName":{
+            "type": "array",
+            "metadata": {
+                "description": "Name of Function App"
+            }
+        },
+        "faTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Function App"
+            }
+        },
+        "faFunctionsExtensionVersion": {
+            "type": "array",
+            "metadata": {
+                "description": "Function App extension version"
+            }
+        },
+        "faFunctionsWorkerRuntime": {
+            "type": "array",
+            "metadata": {
+                "description": "Function App worker runtime"
+            }
+        },
+        "faAccess": {
+            "type": "array",
+            "metadata": {
+                "description": "Whether or not public endpoint access is allowed for this Cognitive Service Account"
+            }
+        },
+        "faNetframeworkVersion": {
+            "type": "Array",
+            "metadata": {
+                "description": "Framework version of function app"
+            }
+        },
+        "vnetName" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+        "saKind": {
+            "type": "Array",
+            "metadata": {
+                "description": "Storage Account Kind"
+            }
+        },
+        "saTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to storage Account"
+            }
+        },
+        "saName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of Storage Account"
+            }
+        },
+        "saSku": {
+            "type": "array",
+            "metadata": {
+                "description": "SKU of Storage Account"
+            }
+        },
+        "faKind": {
+            "type": "array",
+            "metadata": {
+                "description": "Kind of resource"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+		{
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('faName')[copyIndex('faCopy')]]",
+            "type": "Microsoft.Web/sites",
+            "kind": "[parameters('faKind')[copyIndex('faCopy')]]" ,
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('faTags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('saName')[copyIndex('faCopy')])]"
+            ],
+            "properties": {
+                "name": "[parameters('faName')[copyIndex('faCopy')]]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "[parameters('faFunctionsExtensionVersion')[copyIndex('faCopy')]]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "[parameters('faFunctionsWorkerRuntime')[copyIndex('faCopy')]]"
+                        }
+                    ],
+                    "netFrameworkVersion": "[parameters('faNetFrameworkVersion')[copyIndex('faCopy')]]"
+                },
+                "publicNetworkAccess": "[parameters('faAccess')[copyIndex('faCopy')]]"
+            },
+            "copy":{
+                "name":"faCopy",
+                "count":"[length(parameters('faName'))]"
+            }
+        },
+        {
+            "apiVersion": "2022-05-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('saName')[copyIndex('saCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('saTags')]",
+            "kind": "[parameters('saKind')[copyIndex('saCopy')]]",
+            "sku": {
+                "name": "[parameters('saSku')[copyIndex('saCopy')]]"
+            },
+            "properties": {},
+            "copy":{
+                "name": "saCopy",
+                "count": "[length(parameters('saName'))]"
+            }
+		},
+       	{
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		}
+    ]
+}

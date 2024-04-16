@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectCode": {
+      "value": "DataLake"
+    },
+    "environment": {
+      "value": "DEV"
+    },
+    "combineTags": {
+      "value": {
+        "Environment": "DEV",
+        "Project Code": "Datalake",
+        "Owner": "Celebal-Singpost",
+        "Managed By": "ARM"
+      }
+    },
+    "existingResourceGroupName": {
+      "value": "rg-datalake-dev-network01"
+    },
+    "existingVnetName": {
+      "value": "vnet-datalake-dev-datalake01"
+    },
+    "webSubnetAddressPrefix": {
+      "value": "10.0.1.0/24"
+    },
+    "dataSubnetAddressPrefix": {
+      "value": "10.0.2.0/24"
+    },
+    "computeSubnetAddressPrefix": {
+      "value": "10.0.3.0/24"
+    },
+    "databricksContainerSubnetAddressPrefix": {
+      "value": "10.0.4.0/24"
+    },
+    "databricksHostSubnetAddressPrefix": {
+      "value": "10.0.5.0/24"
+    },
+    "nextHopIpAddress": {
+      "value": "172.22.200.132"
+    },
+    "adminUsername": {
+      "value": "testuser"
+    },
+    "adminPassword": {
+      "value": "Password@123"
+    },
+    "sqlAdminUser": {
+      "value": "akash@anshitagoyal181gmail.onmicrosoft.com"
+    },
+    "sqlAdminSID": {
+      "value": "9b7522c3-2f5e-4e4a-9cf0-46274e60ee3e"
+    },
+    "synapseAdminUser": {
+      "value": "akash@anshitagoyal181gmail.onmicrosoft.com"
+    },
+    "synaspeAdminSID": {
+      "value": "9b7522c3-2f5e-4e4a-9cf0-46274e60ee3e"
+    }
+  }
+}

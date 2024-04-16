@@ -1,0 +1,410 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "vnetName" : {
+			"type" : "array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+		"pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		},
+		"synapseWSName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Synapse Workspace"
+			}
+		},
+		"synapseWSTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Synapse Workspace"
+			}
+		},
+		"synapseIdentity": {
+			"type": "Array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"synapseAccess": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"synapseAdminLogin": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"synapseAdminLoginPassword": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"saName": {
+            "type": "Array",
+            "metadata": {
+                "description": "Name of storage account"
+            }
+        },
+        "saTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to storage Account"
+            }
+        },
+        "saSku": {
+            "type": "Array",
+            "metadata": {
+                "description": "Storage Account Sku"
+            }
+        },
+        "saKind": {
+            "type": "Array",
+            "metadata": {
+                "description": "Storage Account Kind"
+            }
+        },
+        "saAccess": {
+            "type": "Array",
+            "metadata": {
+                "description": "Allow or disallow public access to all blobs or containers in the storage account"
+            }
+        },
+        "saHns": {
+            "type": "Array",
+            "metadata": {
+                "description": "description"
+            }
+        },
+		"dataLakeStorageFilesystemName": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"dataLakeStorageFilesystemAccess": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"createManagedPrivateEndpoint": {
+			"type": "array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"synapseSqlPoolName": {
+			"type": "array",
+			"metadata": {
+				"description": "Name of Synapse Sql Pool"
+			}
+		},
+		"synapseSqlPoolTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Synapse Sql Pool"
+			}
+		},
+		"synapseSqlPoolCreateMode": {
+			"type": "array",
+			"metadata": {
+				"description": "Specifies the mode of sql pool creation"
+			}
+		},
+		"synapseSqlPoolSku": {
+			"type": "array",
+			"metadata": {
+				"description": "SQL pool SKU"
+			}
+		},
+		"synapseSparkPoolName": {
+			"type": "array",
+			"metadata": {
+				"description": "Name of Synapse Spark Pool"
+			}
+		},
+		"synapseSparkPoolTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Synapse Spark Pool"
+			}
+		},
+		"synapseSparkPoolNodecount": {
+			"type": "array",
+			"metadata": {
+				"description": "The number of nodes in the spark pool"
+			}
+		},
+		"synapseSparkPoolNodeSize": {
+			"type": "array",
+			"metadata": {
+				"description": "The level of compute power that each node in the Spark pool has"
+			}
+		},
+		"synapseSparkPoolNodeSizeFamily": {
+			"type": "array",
+			"metadata": {
+				"description": "The kind of nodes that the Spark pool provides"
+			}
+		},
+		"sparkVersion": {
+			"type": "array",
+			"metadata": {
+				"description": "The Apache Spark version"
+			}
+		},
+		"sparkAutoScaleEnabled": {
+			"type": "array",
+			"metadata": {
+				"description": "Whether automatic scaling is enabled for the Spark Pool"
+			}
+		},
+		"sparkMinNodeCount": {
+			"type": "array",
+			"metadata": {
+				"description": "The minimum number of nodes Spark Pool can support."
+			}
+		},
+		"sparkMaxNodeCount": {
+			"type": "array",
+			"metadata": {
+				"description": "The maximum number of nodes Spark Pool Can Support"
+			}
+		},
+		"sparkAutoPauseEnabled": {
+			"type": "array",
+			"metadata": {
+				"description": ""
+			}
+		},
+		"sparkAutoPauseDelayInMinutes": {
+			"type": "array",
+			"metadata": {
+				"description": ""
+			}
+		}
+    },
+    "variables": {},
+    "resources": [
+		{
+  			"type": "Microsoft.Synapse/workspaces",
+  			"apiVersion": "2021-06-01",
+  			"name": "[parameters('synapseWSName')[copyIndex('synapseCopy')]]",
+  			"location": "[resourceGroup().location]",
+  			"tags": "[parameters('synapseWSTags')]",
+  			"identity": {
+    			"type": "[parameters('synapseIdentity')[copyIndex('synapseCopy')]]"		
+  			},
+  			"properties": {
+    			"publicNetworkAccess": "[parameters('synapseAccess')[copyIndex('synapseCopy')]]",
+    			"sqlAdministratorLogin": "[parameters('synapseAdminLogin')[copyIndex('synapseCopy')]]",
+    			"sqlAdministratorLoginPassword": "[parameters('synapseAdminLoginPassword')[copyIndex('synapseCopy')]]",
+				"defaultDataLakeStorage": {
+      				"accountUrl": "[concat('https://', parameters('dataLakeStorageFilesystemName')[copyIndex('synapseCopy')], '.dfs.core.windows.net')]",
+      				"createManagedPrivateEndpoint": "[parameters('createManagedPrivateEndpoint')[copyIndex('synapseCopy')]]",
+      				"filesystem": "[parameters('dataLakeStorageFilesystemName')[copyIndex('synapseCopy')]]",
+     				"resourceId": "[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('synapseCopy')])]"
+    			}
+			},
+			"copy": {
+                "name": "synapseCopy",
+                "count": "[length(parameters('synapseWSName'))]"
+            }
+		},
+		{
+  			"type": "Microsoft.Synapse/workspaces/sqlPools",
+  			"apiVersion": "2021-06-01",
+  			"name": "[concat(parameters('synapseWSName')[copyIndex('sqlpoolCopy')], '/' , parameters('synapseSqlPoolName')[copyIndex('sqlpoolCopy')])]",
+  			"location": "[resourceGroup().location]",
+  			"tags": "[parameters('synapseSqlPoolTags')]",
+  			"sku": {
+    			"name": "[parameters('synapseSqlPoolSku')[copyIndex('sqlpoolCopy')]]"
+  			},
+  			"properties": {
+    			"createMode": "[parameters('synapseSqlPoolCreateMode')[copyIndex('sqlpoolCopy')]]"
+  			},
+			"copy": {
+                "name": "sqlpoolCopy",
+                "count": "[length(parameters('synapseSqlPoolName'))]"
+            },
+		    "dependsOn":[
+				"[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('sqlpoolCopy')])]"
+			]
+		},
+		{
+  			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+  			"apiVersion": "2021-06-01",
+  			"name": "[concat(parameters('synapseWSName')[copyIndex('sparkpoolCopy')], '/' , substring(parameters('synapseSparkPoolName')[copyIndex('sparkpoolCopy')],0,15))]",
+  			"location": "[resourceGroup().location]",
+  			"tags": "[parameters('synapseSparkPoolTags')]",
+  			"properties": {
+    			"nodeCount": "[parameters('synapseSparkPoolNodeCount')[copyIndex('sparkpoolCopy')]]",
+    			"nodeSize": "[parameters('synapseSparkPoolNodeSize')[copyIndex('sparkpoolCopy')]]",
+    			"nodeSizeFamily": "[parameters('synapseSparkPoolNodeSizeFamily')[copyIndex('sparkpoolCopy')]]",
+				"autoScale": {
+                    "enabled": "[parameters('sparkAutoScaleEnabled')[copyIndex('sparkpoolCopy')]]",
+                    "minNodeCount": "[parameters('sparkMinNodeCount')[copyIndex('sparkpoolCopy')]]",
+                    "maxNodeCount": "[parameters('sparkMaxNodeCount')[copyIndex('sparkpoolCopy')]]"
+                },
+                "autoPause": {
+					"enabled": "[parameters('sparkAutoPauseEnabled')[copyIndex('sparkpoolCopy')]]",
+                    "delayInMinutes": "[parameters('sparkAutoPauseDelayInMinutes')[copyIndex('sparkpoolCopy')]]"
+				},
+				"sparkVersion": "[parameters('sparkVersion')[copyIndex('sparkpoolCopy')]]"
+			},
+			"copy": {
+                "name": "sparkpoolCopy",
+                "count": "[length(parameters('synapseSparkPoolName'))]"
+            },
+		    "dependsOn":[
+				"[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('sparkpoolCopy')])]"
+			]
+		},
+		{
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('pepCopy')])]"
+                		}
+            		}
+        		]
+    		},
+			"copy": {
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]",
+				"[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('pepCopy')])]"
+			]	
+		},
+		{
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('saName')[copyIndex('saCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('saTags')]",
+            "sku": {
+                "name": "[parameters('saSku')[copyIndex('saCopy')]]"
+            },
+            "kind": "[parameters('saKind')[copyIndex('saCopy')]]",
+
+            "properties": {
+                "isHnsEnabled": "[parameters('saHns')[copyIndex('saCopy')]]",
+                "publicNetworkAccess": "[parameters('saAccess')[copyIndex('saCopy')]]"
+            },
+			"copy": {
+                "name": "saCopy",
+                "count": "[length(parameters('saName'))]"
+            },
+			"dependsOn":[
+				"[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('saCopy')])]"
+			]
+			
+        },
+		{
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "name": "[concat(parameters('saName')[copyIndex('adlsfsCopy')], '/default/', parameters('dataLakeStorageFilesystemName')[copyIndex('adlsfsCopy')])]",
+            "apiVersion": "2021-01-01",
+            "properties": {
+                "publicAccess": "[parameters('dataLakeStorageFilesystemAccess')[copyIndex('adlsfsCopy')]]"
+            },
+			"copy": {
+                "name": "adlsfsCopy",
+                "count": "[length(parameters('dataLakeStorageFilesystemName'))]"
+            },
+			"dependsOn" : [
+				"[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('adlsfsCopy')])]"
+			]
+        }
+    ]
+}

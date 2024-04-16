@@ -1,0 +1,35 @@
+//Standard Logic App
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "logicAppName": {
+            "type": "array",
+            "metadata": {
+                "description": "Name of Logic App"
+            }
+        },
+        "logicAppTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Logic App"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('logicAppName')[copyIndex('logicAppCopy')]]",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp,workflowapp",
+            "location":  "[resourceGroup().location]",
+            "tags": "[parameters('logicAppTags')]",
+            "properties" : {},
+            "copy": {
+                "name": "logicAppCopy",
+                "count" : "[length(parameters('logicAppName'))]"
+            }
+        }
+    ]
+}

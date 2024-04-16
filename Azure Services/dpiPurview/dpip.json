@@ -1,0 +1,824 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+      "rgName": {
+        "type": "array"
+      },
+      "rgLocation": {
+        "type": "array"
+      }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('rgName')[copyIndex('rgCopy')]]",
+            "location": "[parameters('rgLocation')[copyIndex('rgCopy')]]",
+            "properties": {},
+            "copy":{
+                "name":"rgCopy",
+                "count":"[length(parameters('rgName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "dpiNoPurview",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups',parameters('rgName')[copyIndex('ntCopy')])]"
+            ],
+            "resourceGroup" :"[parameters('rgName')[copyIndex('ntCopy')]]",
+            "copy":{
+                "name" : "ntCopy",
+                "count" : "[length(parameters('rgName'))]"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+	                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	                "contentVersion": "1.0.0.0",
+	                "parameters": {
+		                "adfName": {
+    		                "type": "Array",
+    		                "metadata": {
+          		                "description": "Name of Data Factory"
+        	                },
+                            "defaultValue": ["adfct23armtv2"]
+      	                },
+		                "adfTags": {
+			                "type": "object",
+			                "metadata": {
+          		                "description": "Tags Assigned to Data Factory"
+        	                },
+                             "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+		                },
+		                "adfAccess" : {
+			                "type" : "Array",
+			                "metadata": {
+				                "description": "Whether or not public network access is allowed for the data factory."
+			                },
+                            "defaultValue": ["Enabled"]
+		                },
+		                "vnetName" : {
+			                "type" : "Array",
+			                "metadata": {
+				                "description": "Name of Virtual Network"
+			                },
+                            "defaultValue": ["vnetct2023arm"]
+		                },
+                        "vnetTags" : {
+                            "type" : "object",
+                            "metadata": {
+                                "description": "Tags assigned to Virtual Network"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "vnetAddressSpace" : {
+                            "type" : "Array",
+                            "metadata": {
+                                "description": "Address Space of Virtual Network"
+                            },
+                            "defaultValue": ["10.0.0.0/24"]
+                        },
+                        "subnetName": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Name of Subnet"
+                            },
+                            "defaultValue": ["pep-subnet"]
+                        },
+                        "subnetAddressPrefix": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Address Prefix of Subnet"
+                            },
+                            "defaultValue": ["10.0.0.0/26"]
+                        },
+                        "pepName": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Private Endpoint Name"
+                            },
+                            "defaultValue": ["adfPep"]
+                        },
+                        "pepTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to Private Endpoint"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "subResource": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "SubResource of Private Endpoint"
+                            },
+                            "defaultValue": ["dataFactory"]
+                        },
+                        "kvName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of Key Vault"
+                            },
+                            "defaultValue": ["kviz23armt2c"]
+                        },
+                        "kvTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to Key Vault"
+                            },
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "kvSkuFamily": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Keyvault Sku family"
+                            },
+                            "defaultValue":["A"]
+                        },
+                        "kvSkuName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Keyvault Sku Name"
+                            },
+                            "defaultValue":["Standard"]
+                        },
+                        "synapseWSName": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Name of Synapse Workspace"
+                            },
+                            "defaultValue":["synws23armt1c"]
+		                },
+                        "synapseWSTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to Synapse Workspace"
+                            },
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "synapseIdentity": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["SystemAssigned"]
+                        },
+                        "synapseAccess": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["Enabled"]
+                        },
+                        "synapseAdminLogin": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["ctuserarm"]
+                        },
+                        "synapseAdminLoginPassword": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["userCT2023arm"]
+                        },
+                        "saName": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Name of storage account"
+                            },
+                            "defaultValue":["strgct23armtvg1"]
+                        },
+                        "saTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to storage Account"
+                            },
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "saSku": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Storage Account Sku"
+                            },
+                            "defaultValue":["Standard_LRS"]
+                        },
+                        "saKind": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Storage Account Kind"
+                            },
+                            "defaultValue":["StorageV2"]
+                        },
+                        "saAccess": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "Allow or disallow public access to all blobs or containers in the storage account"
+                            },
+                            "defaultValue":["Disabled"]
+                        },
+                        "saHns": {
+                            "type": "Array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["true"]
+                        },
+                        "dataLakeStorageFilesystemName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["adlsct12023arm"]
+                        },
+                        "dataLakeStorageFilesystemAccess": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["None"]
+                        },
+                        "createManagedPrivateEndpoint": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue":["false"]
+                        },
+                        "synapseSqlPoolName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of Synapse Sql Pool"
+                            },
+                            "defaultValue":["sqlpoolct23arvt"]
+                        },
+                        "synapseSqlPoolTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to Synapse Sql Pool"
+                            },
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "synapseSqlPoolCreateMode": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Specifies the mode of sql pool creation"
+                            },
+                            "defaultValue":["Default"]
+                        },
+                        "synapseSqlPoolSku": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "SQL pool SKU"
+                            },
+                            "defaultValue":["DW100c"]
+                        },
+                        "synPepName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of Synapse Workspace Private endpoint"
+                            },
+                            "defaultValue":["synPep"]
+                        },
+                        "synPepTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to synapse Workspace"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "synSubResource": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "SubResource of Private Endpoint"
+                            },
+                            "defaultValue":["Sql"]
+                        },
+                        "sqlDBName": {
+							"type": "array",
+							"metadata": {
+								"description": "Name of SQL Database"
+							},
+                            "defaultValue":["sqldbct23avtt1"]
+						},
+						"sqlDBTags": {
+							"type": "object",
+							"metadata": {
+								"description": "Tags assigned to SQL Database"
+							},
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+						},
+						"sqlDBSkuName": {
+							"type": "array",
+							"metadata": {
+								"description": "SKU of SQL DB"
+							},
+                            "defaultValue":["Basic"]
+						},
+						"sqlDBCollation": {
+							"type": "array",
+							"metadata": {
+								"description": "Collation of SQL Database"
+							},
+                            "defaultValue":["SQL_Latin1_General_CP1_CI_AS"]
+						},
+						"sqlServerName": {
+							"type": "array",
+							"metadata": {
+								"description": "Name of SQL Server"
+							},
+                            "defaultValue":["sqlserttrarmtv1"]
+						},
+						"sqlServerTags": {
+							"type": "object",
+							"metadata": {
+								"description": "Tags assigned to SQL Server"
+							},
+                            "defaultValue":{
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+						},
+						"sqlServerAdminUser": {
+							"type": "array",
+							"metadata": {
+								"description": "Administrator username for the server"
+							},
+                            "defaultValue":["ctuser2013arm"]
+						},
+						"sqlServerAdminPassword": {
+							"type": "array",
+							"metadata": {
+								"description": "The administrator login password"
+							},
+                            "defaultValue":["CTuser2013#arm"]
+						},
+						"sqlServerTlsVersion": {
+							"type": "array",
+							"metadata": {
+								"description": "Minimal TLS version"
+							},
+                            "defaultValue":["1.2"]
+						},
+						"sqlServerAccess": {
+							"type": "array",
+							"metadata": {
+								"description": "Whether or not public endpoint access is allowed for this server"
+							},
+                            "defaultValue":["Disabled"]
+						},
+						"sqlServerVersion": {
+							"type": "array",
+							"metadata": {
+								"description": "The version of the server"
+							},
+                            "defaultValue":["12.0"]
+						},
+                        "sqlPepName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of SQL Server Private endpoint"
+                            },
+                            "defaultValue":["sqlPep"]
+                        },
+                        "sqlPepTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to SQL Server"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "sqlSubResource": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "SubResource of Private Endpoint"
+                            },
+                            "defaultValue":["sqlServer"]
+                        },
+                        "purviewName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of Purview Account"
+                            },
+                            "defaultValue":["purct23armtv1m"]
+                        },
+                        "purviewTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned to purview"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "purviewIdentity": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue": ["SystemAssigned"]
+                        },
+                        "purviewAccess": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "description"
+                            },
+                            "defaultValue" :["Disabled"]
+                        },
+                        "purPepName": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "Name of SQL Server Private endpoint"
+                            },
+                            "defaultValue":["purviewPep"]
+                        },
+                        "purPepTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Tags assigned tpur Server"
+                            },
+                            "defaultValue": {
+                                "Environment" : "UAT",
+                                "Owner"       : "John"
+                            }
+                        },
+                        "purSubResource": {
+                            "type": "array",
+                            "metadata": {
+                                "description": "SubResource of Private Endpoint"
+                            },
+                            "defaultValue":["account"]
+                        }
+                    },
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "apiVersion": "2022-07-01",
+                            "name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('vnetTags')]",
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+                                }
+                            },
+                            "copy": {
+                                "name": "vnetCopy",
+                                "count": "[length(parameters('vnetName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "apiVersion": "2022-07-01",
+                            "name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+                            "properties": {
+                                "addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+                            },
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+                            ],
+                            "copy": {
+                                "name": "subnetCopy",
+                                "count": "[length(parameters('subnetName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DataFactory/factories",
+                            "apiVersion": "2018-06-01",
+                            "name": "[parameters('adfName')[copyIndex('adfCopy')]]",
+                            "location" : "[resourceGroup().location]",
+                            "tags": "[parameters('adfTags')]",
+                            "properties": {
+                                "publicNetworkAccess": "[parameters('adfAccess')[copyIndex('adfCopy')]]"
+                            },
+                            "copy": {
+                                "name": "adfCopy",
+                                "count": "[length(parameters('adfName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.KeyVault/vaults",
+                            "apiVersion": "2022-07-01",
+                            "name": "[parameters('kvName')[copyIndex('kvCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('kvTags')]",
+                            "properties": {
+                                "sku": {
+                                    "family": "[parameters('kvSkuFamily')[copyIndex('kvCopy')]]",
+                                    "name": "[parameters('kvSkuName')[copyIndex('kvCopy')]]"
+                                },  
+                                    "tenantId": "[subscription().tenantId]",
+                                    "accessPolicies": []
+                            },
+                            "copy":{
+                                "name": "kvCopy",
+                                "count" : "[length(parameters('kvName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Synapse/workspaces",
+                            "apiVersion": "2021-06-01",
+                            "name": "[parameters('synapseWSName')[copyIndex('synapseCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('synapseWSTags')]",
+                            "identity": {
+                                "type": "[parameters('synapseIdentity')[copyIndex('synapseCopy')]]"		
+                            },
+                            "properties": {
+                                "publicNetworkAccess": "[parameters('synapseAccess')[copyIndex('synapseCopy')]]",
+                                "sqlAdministratorLogin": "[parameters('synapseAdminLogin')[copyIndex('synapseCopy')]]",
+                                "sqlAdministratorLoginPassword": "[parameters('synapseAdminLoginPassword')[copyIndex('synapseCopy')]]",
+                                "defaultDataLakeStorage": {
+                                    "accountUrl": "[concat('https://', parameters('dataLakeStorageFilesystemName')[copyIndex('synapseCopy')], '.dfs.core.windows.net')]",
+                                    "createManagedPrivateEndpoint": "[parameters('createManagedPrivateEndpoint')[copyIndex('synapseCopy')]]",
+                                    "filesystem": "[parameters('dataLakeStorageFilesystemName')[copyIndex('synapseCopy')]]",
+                                    "resourceId": "[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('synapseCopy')])]"
+                                }
+                            },
+                            "copy": {
+                                "name": "synapseCopy",
+                                "count": "[length(parameters('synapseWSName'))]"
+                            }
+		                },
+		                {
+                            "type": "Microsoft.Synapse/workspaces/sqlPools",
+                            "apiVersion": "2021-06-01",
+                            "name": "[concat(parameters('synapseWSName')[copyIndex('sqlpoolCopy')], '/' , parameters('synapseSqlPoolName')[copyIndex('sqlpoolCopy')])]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('synapseSqlPoolTags')]",
+                            "sku": {
+                                "name": "[parameters('synapseSqlPoolSku')[copyIndex('sqlpoolCopy')]]"
+                            },
+                            "properties": {
+                                "createMode": "[parameters('synapseSqlPoolCreateMode')[copyIndex('sqlpoolCopy')]]"
+                            },
+                            "copy": {
+                                "name": "sqlpoolCopy",
+                                "count": "[length(parameters('synapseSqlPoolName'))]"
+                            },
+                            "dependsOn":[
+                                "[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('sqlpoolCopy')])]"
+                            ]
+		                },  
+                        {
+                            "type": "Microsoft.Storage/storageAccounts",
+                            "apiVersion": "2022-09-01",
+                            "name": "[parameters('saName')[copyIndex('saCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('saTags')]",
+                            "sku": {
+                                "name": "[parameters('saSku')[copyIndex('saCopy')]]"
+                            },
+                            "kind": "[parameters('saKind')[copyIndex('saCopy')]]",
+
+                            "properties": {
+                                "isHnsEnabled": "[parameters('saHns')[copyIndex('saCopy')]]",
+                                "publicNetworkAccess": "[parameters('saAccess')[copyIndex('saCopy')]]"
+                            },
+                            "copy": {
+                                "name": "saCopy",
+                                "count": "[length(parameters('saName'))]"
+                            },
+                            "dependsOn":[
+                                "[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('saCopy')])]"
+                            ]
+                        },
+                        {
+                            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+                            "name": "[concat(parameters('saName')[copyIndex('adlsfsCopy')], '/default/', parameters('dataLakeStorageFilesystemName')[copyIndex('adlsfsCopy')])]",
+                            "apiVersion": "2021-01-01",
+                            "properties": {
+                                "publicAccess": "[parameters('dataLakeStorageFilesystemAccess')[copyIndex('adlsfsCopy')]]"
+                            },
+                            "copy": {
+                                "name": "adlsfsCopy",
+                                "count": "[length(parameters('dataLakeStorageFilesystemName'))]"
+                            },
+                            "dependsOn" : [
+                                "[resourceId('Microsoft.Storage/storageAccounts',parameters('saName')[copyIndex('adlsfsCopy')])]"
+                            ]
+                        },                  
+                        {
+                            "type": "Microsoft.Sql/servers/databases",
+                            "apiVersion": "2022-05-01-preview",
+                            "name": "[concat(parameters('sqlServerName')[copyIndex('sqlCopy')],'/',parameters('sqlDBName')[copyIndex('sqlCopy')])]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('sqlDBTags')]",
+                            "sku": {
+                                "name": "[parameters('sqlDBSkuName')[copyIndex('sqlCopy')]]"
+                            },
+                            "properties": {
+                                "collation": "[parameters('sqlDBCollation')[copyIndex('sqlCopy')]]"
+                            },
+                            "copy":{
+                                "name": "sqlCopy",
+                                "count" : "[length(parameters('sqlDBName'))]"
+                            },
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName')[copyIndex('sqlCopy')])]"
+                            ]
+                        },
+                        {
+                            "type": "Microsoft.Sql/servers",
+                            "apiVersion": "2022-05-01-preview",
+                            "name": "[parameters('sqlServerName')[copyIndex('sqlServerCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('sqlServerTags')]",
+                            "properties": {
+                                "administratorLogin": "[parameters('sqlServerAdminUser')[copyIndex('sqlServerCopy')]]",
+                                "administratorLoginPassword": "[parameters('sqlServerAdminPassword')[copyIndex('sqlServerCopy')]]",
+                                "minimalTlsVersion": "[parameters('sqlServerTlsVersion')[copyIndex('sqlServerCopy')]]",
+                                "publicNetworkAccess": "[parameters('sqlServerAccess')[copyIndex('sqlServerCopy')]]",
+                                "version": "[parameters('sqlServerVersion')[copyIndex('sqlServerCopy')]]"
+                            },
+                            "copy":{
+                                "name" : "sqlServerCopy",
+                                "count": "[length(parameters('sqlServerName'))]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Purview/accounts",
+                            "apiVersion": "2021-07-01",
+                            "name": "[parameters('purviewName')[copyIndex('purviewCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('purviewTags')]",
+                            "identity": {
+                                "type": "[parameters('purviewIdentity')[copyIndex('purviewCopy')]]"
+                            },
+                            "properties": {
+                                "publicNetworkAccess": "[parameters('purviewAccess')[copyIndex('purviewCopy')]]"
+                            },
+			                "copy": {
+                                "name": "purviewCopy",
+                                "count": "[length(parameters('purviewName'))]"
+                            }
+                        },
+//---------------------------------------------Private Endpoint DataFactory------------------------------------------------------------------------------------------------------------------------//
+                        {
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2022-07-01",
+                            "name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('pepTags')]",
+                            "properties": {
+                                "subnet": {
+                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+                                },
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                                        "properties": {
+                                            "groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+                                            "privateLinkServiceId": "[resourceId('Microsoft.DataFactory/factories',parameters('adfName')[copyIndex('pepCopy')])]"
+                                        }
+                                    }
+                                ]
+                            },
+                            "copy": {
+                                "name": "pepCopy",
+                                "count": "[length(parameters('pepName'))]"
+                            },
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]",
+                                "[resourceId('Microsoft.DataFactory/factories',parameters('adfName')[copyIndex('pepCopy')])]"
+                            ]	
+                        },
+//---------------------------------------------Private Endpoint Synapse Workspace------------------------------------------------------------------------------------------------------------------------//
+                        {
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2022-07-01",
+                            "name": "[parameters('synPepName')[copyIndex('synPepCopy')]]",
+                            "location": "[resourceGroup().location]",
+                            "tags": "[parameters('synPepTags')]",
+                            "properties": {
+                                "subnet": {
+                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('synPepCopy')], parameters('subnetName')[copyIndex('synPepCopy')])]"
+                                },
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[concat(parameters('synPepName')[copyIndex('synPepCopy')],'-','connection')]",
+                                        "properties": {
+                                            "groupIds": ["[parameters('synSubResource')[copyIndex('synPepCopy')]]"],
+                                            "privateLinkServiceId": "[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('synPepCopy')])]"
+                                        }
+                                    }
+                                ]
+                            },
+                            "copy": {
+                                "name": "synPepCopy",
+                                "count": "[length(parameters('synPepName'))]"
+                            },
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('synPepCopy')], parameters('subnetName')[copyIndex('synPepCopy')])]",
+                                "[resourceId('Microsoft.Synapse/workspaces',parameters('synapseWSName')[copyIndex('synPepCopy')])]"
+                            ]	
+		                },
+//---------------------------------------------Private Endpoint od Sql Server------------------------------------------------------------------------------------------------------------------------//                        
+                        {
+							"type": "Microsoft.Network/privateEndpoints",
+							"apiVersion": "2022-07-01",
+							"name": "[parameters('sqlPepName')[copyIndex('sqlPepCopy')]]",
+							"location": "[resourceGroup().location]",
+							"tags": "[parameters('sqlPepTags')]",
+							"properties": {
+								"subnet": {
+									"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('sqlPepCopy')], parameters('subnetName')[copyIndex('sqlPepCopy')])]"
+								},
+								"privateLinkServiceConnections": [
+									{
+										"name": "[concat(parameters('sqlPepName')[copyIndex('sqlPepCopy')],'-','connection')]",
+										"properties": {
+											"groupIds": ["[parameters('sqlSubResource')[copyIndex('sqlPepCopy')]]"],
+											"privateLinkServiceId": "[resourceId('Microsoft.Sql/servers',parameters('sqlServerName')[copyIndex('sqlPepCopy')])]"
+										}
+									}
+								]
+							},
+							"copy": {
+								"name": "sqlPepCopy",
+								"count": "[length(parameters('sqlPepName'))]"
+							},
+							"dependsOn": [
+								"[resourceId('Microsoft.Sql/servers',parameters('sqlServerName')[copyIndex('sqlPepCopy')])]"
+								
+							]	
+						},
+//---------------------------------------------Private Endpoint of Purview Account------------------------------------------------------------------------------------------------------------------------//                        
+                        {
+			                "type": "Microsoft.Network/privateEndpoints",
+			                "apiVersion": "2022-07-01",
+			                "name": "[parameters('purPepName')[copyIndex('purPepCopy')]]",
+			                "location": "[resourceGroup().location]",
+			                "tags": "[parameters('purPepTags')]",
+			                "properties": {
+        		                "subnet": {
+            		                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('purPepCopy')], parameters('subnetName')[copyIndex('purPepCopy')])]"
+        		                },
+				                "privateLinkServiceConnections": [
+        			                {
+                		                "name": "[concat(parameters('purPepName')[copyIndex('purPepCopy')],'-','connection')]",
+                		                "properties": {
+                    		                "groupIds": ["[parameters('purSubResource')[copyIndex('purPepCopy')]]"],
+							                "privateLinkServiceId": "[resourceId('Microsoft.Purview/accounts',parameters('purviewName')[copyIndex('purPepCopy')])]"
+                		                }
+            		                }
+        		                ]
+    		                },
+			                "copy": {
+                                "name": "purPepCopy",
+                                "count": "[length(parameters('purPepName'))]"
+                            },
+			                "dependsOn": [
+				                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('purPepCopy')], parameters('subnetName')[copyIndex('purPepCopy')])]",
+				                "[resourceId('Microsoft.Purview/accounts',parameters('purviewName')[copyIndex('purPepCopy')])]"
+			                ]	
+		                }
+
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "armtemplate" 
+        },
+        "location": {
+            "value": "Central India" 
+        },
+        "containerName": {
+            "value": "container" 
+        },
+        "sqlAdministratorLogin": {
+            "value": "sqladmin"
+        },
+        "sqlAdministratorLoginPassword": {
+            "value": "password@123" 
+        },
+        "storageAccountSKUName": {
+            "value": "Standard_RAGRS" 
+        },
+        "storageAccountSKUTier": {
+            "value": "Standard" 
+        },
+        "tagValues": {
+            "value": {
+                "Environment":"ARM Template",
+                "Owner":"ARM"
+            }
+        }
+    }
+}

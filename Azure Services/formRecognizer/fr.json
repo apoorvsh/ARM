@@ -1,0 +1,171 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "frName":{
+            "type": "array",
+            "metadata": {
+                "description": "Name of Cognitive Service Account (custom Vision)"
+            }
+        },
+        "frTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Cognitive Service Account"
+            }
+        },
+        "frSkuName": {
+            "type": "array",
+            "metadata": {
+                "description": "SKU of Cognitive Service Account"
+            }
+        },
+        "frKind": {
+            "type": "array",
+            "metadata": {
+                "description": "Kind of Cognitive Service Account"
+            }
+        },
+        "frCustomSubDomainName": {
+            "type": "array",
+            "metadata": {
+                "description": "Optional subdomain name used for token-based authentication"
+            }
+        },
+        "frAccess": {
+            "type": "array",
+            "metadata": {
+                "description": "Whether or not public endpoint access is allowed for this Cognitive Service Account"
+            }
+        },
+        "vnetName" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "Array",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},"pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		}
+    },
+    "variables": {},
+    "resources": [
+       	{
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')[copyIndex('vnetCopy')]]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')[copyIndex('vnetCopy')]]"]
+				}
+    		},
+			"copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName')[copyIndex('subnetCopy')], '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')[copyIndex('subnetCopy')])]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2021-10-01",
+            "name": "[parameters('frName')[copyIndex('frCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('frTags')]",
+            "sku": {
+                "name": "[parameters('frSkuName')[copyIndex('frCopy')]]"
+                
+            },
+            "kind": "[parameters('frKind')[copyIndex('frCopy')]]",
+            "properties": {
+                "customSubDomainName": "[parameters('frCustomSubDomainName')[copyIndex('frCopy')]]",
+                "publicNetworkAccess": "[parameters('frAccess')[copyIndex('frCopy')]]" 
+            },
+            "copy":{
+                "name": "frCopy",
+                "count": "[length(parameters('frName'))]"
+            }
+        },
+        {
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName')[copyIndex('pepCopy')], parameters('subnetName')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.CognitiveServices/accounts',parameters('frName')[copyIndex('pepCopy')])]"
+                		}
+            		}
+        		]
+    		},
+			"copy": {
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.CognitiveServices/accounts',parameters('frName')[copyIndex('pepCopy')])]"
+			]	
+		}
+    ]
+}

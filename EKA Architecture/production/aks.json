@@ -1,0 +1,159 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for Resources"
+            }
+        },
+        "aksname": {
+            "type": "string",
+            "metadata": {
+                "description": "AKS Name"
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Name"
+            }
+        },
+        "skuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Tier"
+            }
+        },
+        "dnsprefix": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS Prefix"
+            }
+        },
+        "loadBalancerSku": {
+            "type": "string",
+            "metadata": {
+                "description": "Load Balancer SKU"
+            }
+        },
+        "agentPoolProfielname": {
+            "type": "string",
+            "metadata": {
+                "description": "Agent Pool Profile Name"
+            }
+        },
+        "networkPlugin": {
+            "type": "string",
+            "metadata": {
+                "description": "Network Plugin"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Size"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+        "rgName": "eka_infra_deploment",
+        "identity": "SystemAssigned",
+        "kubernetesVersion": "1.25.6",
+        "enableRBAC": true,
+        "nodeResourceGroup": "[concat('MC',variables('rgName'),parameters('aksName'))]",
+        "upgradeChannel": "patch",
+        "disableLocalAccounts": false,
+        "enablePrivateCluster": false,
+        "enableAzurePolicy": false,
+        "enableSecretStoreCSIDriver": false,
+        "osDiskSizeGB": 0,
+        "count": 1,
+        "enableAutoScaling": true,
+        "minCount": 1,
+        "maxCount": 5,
+        "osType": "Linux",
+        "storageProfile": "ManagedDisks",
+        "type": "VirtualMachineScaleSets",
+        "mode": "System",
+        "maxPods": 110,
+        "enableNodePublicIP": false
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ContainerService/managedClusters",
+            "apiVersion": "2023-01-02-preview",
+            "location": "[parameters('location')]",
+            "name": "[parameters('aksName')]",
+            "properties": {
+                "kubernetesVersion": "[variables('kubernetesVersion')]",
+                "enableRBAC": "[variables('enableRBAC')]",
+                "dnsPrefix": "[parameters('dnsPrefix')]",
+                "nodeResourceGroup": "[variables('nodeResourceGroup')]",
+                "agentPoolProfiles": [
+                    {
+                        "name": "[parameters('agentPoolProfielname')]",
+                        "osDiskSizeGB": "[variables('osDiskSizeGB')]",
+                        "count": "[variables('count')]",
+                        "enableAutoScaling": "[variables('enableAutoScaling')]",
+                        "minCount": "[variables('minCount')]",
+                        "maxCount": "[variables('maxCount')]",
+                        "vmSize": "[parameters('vmSize')]",
+                        "osType": "[variables('osType')]",
+                        "storageProfile": "[variables('storageProfile')]",
+                        "type": "[variables('type')]",
+                        "mode": "[variables('mode')]",
+                        "maxPods": "[variables('maxPods')]",
+                        "availabilityZones": [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "enableNodePublicIP": "[variables('enableNodePublicIP')]"
+                    }
+                ],
+                "networkProfile": {
+                    "loadBalancerSku": "[parameters('loadBalancerSku')]",
+                    "networkPlugin": "[parameters('networkPlugin')]"
+                },
+                "autoUpgradeProfile": {
+                    "upgradeChannel": "[variables('upgradeChannel')]"
+                },
+                "disableLocalAccounts": "[variables('disableLocalAccounts')]",
+                "apiServerAccessProfile": {
+                    "enablePrivateCluster": "[variables('enablePrivateCluster')]"
+                },
+                "addonProfiles": {
+                    "azurepolicy": {
+                        "enabled": "[variables('enableAzurePolicy')]"
+                    },
+                    "azureKeyvaultSecretsProvider": {
+                        "enabled": "[variables('enableSecretStoreCSIDriver')]"
+                    }
+                }
+            },
+            "identity": {
+                "type": "[variables('identity')]"
+            },
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('skuTier')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ],
+    "outputs": {
+        "controlPlaneFQDN": {
+            "type": "string",
+            "value": "[reference(concat('Microsoft.ContainerService/managedClusters/', parameters('aksName'))).fqdn]"
+        }
+    }
+}

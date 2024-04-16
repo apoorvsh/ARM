@@ -1,0 +1,279 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+        "vnetName" : {
+			"type" : "string",
+			"metadata": {
+				"description": "Name of Virtual Network"
+			}
+		},
+		"vnetTags" : {
+			"type" : "object",
+			"metadata": {
+				"description": "Tags assigned to Virtual Network"
+			}
+		},
+		"vnetAddressSpace" : {
+			"type" : "string",
+			"metadata": {
+				"description": "Address Space of Virtual Network"
+			}
+		},
+		"subnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Subnet"
+			}
+		},
+		"subnetAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix of Subnet"
+			}
+		},
+		"pepName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Private Endpoint Name"
+			}
+		},
+		"pepTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to Private Endpoint"
+			}
+		},
+		"subResource": {
+			"type": "Array",
+			"metadata": {
+				"description": "SubResource of Private Endpoint"
+			}
+		},
+		"dbrName": {
+            "type": "Array",
+            "metadata": {
+                "description": "Name of Databricks Workspace"
+            }
+        },
+        "dbrTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags assigned to Databricks"
+            }
+        },
+        "dbrSkuName": {
+            "type": "Array",
+            "metadata": {
+                "description": "Sku of Databricks"
+            }
+        },
+        "managedRGName": {
+            "type": "Array",
+            "metadata": {
+                "description": "Name of Managed Resource Group"
+            }
+        },
+        "dbrAccess": {
+            "type": "Array",
+            "metadata": {
+                "description": "The network access type for accessing workspace"
+            }
+        },
+        "dbrNsgRules": {
+            "type": "Array",
+            "metadata": {
+                "description": "Gets or sets a value indicating whether data plane (clusters) to control plane communication happen over private endpoint."
+            }
+        },
+		"dbrPrivateSubnet": {
+			"type": "Array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"dbrPublicSubnet": {
+			"type": "Array",
+			"metadata": {
+				"description": "description"
+			}
+		},
+		"dbrSubnetName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Delegated subnet for databricks"
+			}
+		},
+		"dbrAddressPrefix": {
+			"type": "Array",
+			"metadata": {
+				"description": "Address Prefix for Delegated Subnet"
+			}
+		},
+		"dbrNPIP": {
+			"type": "Array",
+			"metadata": {
+				"description": "No public Ip for Databricks"
+			}
+		},
+		"nsgName": {
+			"type": "Array",
+			"metadata": {
+				"description": "Name of Network Security group"
+			}
+		},
+		"nsgTags": {
+			"type": "object",
+			"metadata": {
+				"description": "Tags assigned to network security Group"
+			}
+		}
+    },
+    "variables": {
+		"vnetRef": ["vnetct2023arm","vnetct2023arm"],
+		"subnetRef": ["pep-subnet","pep-subnet"],
+		"dbrRef": ["adbct2023arm","adbct2023arm"]
+	},
+    "resources": [
+		{
+  			"type": "Microsoft.Network/networkSecurityGroups",
+  			"apiVersion": "2022-07-01",
+  			"name": "[parameters('nsgName')[copyIndex('nsgCopy')]]",
+  			"location": "[resourceGroup().location]",
+  			"tags": "[parameters('nsgTags')]",
+  			"properties": {},
+			"copy": {
+                "name": "nsgCopy",
+                "count": "[length(parameters('nsgName'))]"
+            }
+		},
+        {
+            "type": "Microsoft.Databricks/workspaces",
+            "apiVersion": "2023-02-01",
+            "name": "[parameters('dbrName')[copyIndex('dbrCopy')]]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('dbrTags')]",
+            "sku": {
+                "name": "[parameters('dbrSkuName')[copyIndex('dbrCopy')]]" 
+            },
+            "properties": {
+                "managedResourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('managedRGName')[copyIndex('dbrCopy')])]",
+                "publicNetworkAccess": "[parameters('dbrAccess')[copyIndex('dbrCopy')]]", 
+                "requiredNsgRules": "[parameters('dbrNsgRules')[copyIndex('dbrCopy')]]",
+				"parameters":{
+                	"customPrivateSubnetName": {
+                		"value": "[parameters('dbrPrivateSubnet')[copyIndex('dbrCopy')]]"
+                	},
+                	"customPublicSubnetName": {
+                 		"value": "[parameters('dbrPublicSubnet')[copyIndex('dbrCopy')]]"
+                	},
+                	"customVirtualNetworkId": {
+               			"value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+                	},
+                	"enableNoPublicIp": {
+                		"value": "[parameters('dbrNPIP')[copyIndex('dbrCopy')]]"
+					}
+           		}	  
+			},
+			"copy": {
+                "name": "dbrCopy",
+                "count": "[length(parameters('dbrName'))]"
+            },
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('SubnetName')[copyIndex('dbrCopy')])]",
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('dbrPrivateSubnet')[copyIndex('dbrCopy')])]",
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('dbrPublicSubnet')[copyIndex('dbrCopy')])]",
+				"[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')[copyIndex('dbrCopy')])]"
+            ]
+		},
+        {
+    		"type": "Microsoft.Network/virtualNetworks",
+    		"apiVersion": "2022-07-01",
+    		"name": "[parameters('vnetName')]",
+    		"location": "[resourceGroup().location]",
+    		"tags": "[parameters('vnetTags')]",
+    		"properties": {
+				"addressSpace": {
+					"addressPrefixes": ["[parameters('vnetAddressSpace')]"]
+				}
+    		}
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName'), '/' , parameters('subnetName')[copyIndex('subnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('subnetAddressPrefix')[copyIndex('subnetCopy')]]"
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            ],
+			"copy": {
+                "name": "subnetCopy",
+                "count": "[length(parameters('subnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+  			"apiVersion": "2022-07-01",
+  			"name": "[concat(parameters('vnetName'), '/' , parameters('dbrSubnetName')[copyIndex('dbrSubnetCopy')])]",
+ 			"properties": {
+    			"addressPrefix": "[parameters('dbrAddressPrefix')[copyIndex( 'dbrSubnetCopy')]]",
+				"delegations": [
+      				{
+        				"id": "[concat(resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('dbrSubnetName')[copyIndex('dbrSubnetCopy')]), '/delegations/Microsoft.Databricks.workspaces')]",
+        				"name": "Microsoft.Databricks.workspaces",
+        				"properties": {
+         				 	"serviceName": "Microsoft.Databricks/workspaces"
+        				},
+        				"type": "Microsoft.Network/virtualNetworks/subnets/delegations"
+      				}
+    			],
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('nsgName')[copyIndex('dbrSubnetCopy')])]",
+					"location": "[resourceGroup().location]",
+					"properties":{}
+				}
+      		},
+			"dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+				"[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'),variables('subnetRef')[copyIndex('dbrSubnetCopy')])]"
+            ],
+			"copy": {
+                "name": "dbrSubnetCopy",
+                "count": "[length(parameters('dbrSubnetName'))]"
+            }
+		},
+		{
+			"type": "Microsoft.Network/privateEndpoints",
+			"apiVersion": "2022-07-01",
+			"name": "[parameters('pepName')[copyIndex('pepCopy')]]",
+			"location": "[resourceGroup().location]",
+			"tags": "[parameters('pepTags')]",
+			"properties": {
+        		"subnet": {
+            		"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetRef')[copyIndex('pepCopy')], variables('subnetRef')[copyIndex('pepCopy')])]"
+        		},
+				"privateLinkServiceConnections": [
+        			{
+                		"name": "[concat(parameters('pepName')[copyIndex('pepCopy')],'-','connection')]",
+                		"properties": {
+                    		"groupIds": ["[parameters('subResource')[copyIndex('pepCopy')]]"],
+							"privateLinkServiceId": "[resourceId('Microsoft.Databricks/workspaces',variables('dbrRef')[copyIndex('pepCopy')])]"
+                		}
+						
+            		}
+        		]
+    		},
+			"copy": {
+				"mode" : "Serial",
+				"batchSize" : 1,
+                "name": "pepCopy",
+                "count": "[length(parameters('pepName'))]"
+            },
+			"dependsOn": [
+				"[resourceId('Microsoft.Databricks/workspaces',variables('dbrRef')[copyIndex('pepCopy')])]"
+			]	
+		}
+    ]
+}

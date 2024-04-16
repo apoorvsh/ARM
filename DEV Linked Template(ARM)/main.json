@@ -1,0 +1,783 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectCode": {
+      "type": "string",
+      "metadata": {
+        "description": "Project Code"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment of Project"
+      }
+    },
+    "combineTags": {
+      "type": "object",
+      "metadata": {
+        "discription": "Combine Resource Tags for All resources"
+      }
+    },
+    "existingResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Existing Resource Group Name"
+      }
+    },
+    "existingVnetName": {
+      "type": "string",
+      "metadata": {
+        "discription": "Existing Vnet Name"
+      }
+    },
+    "webSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "discription": "Web Subnet Address Space"
+      }
+    },
+    "dataSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "discription": "Data Subnet Address Space"
+      }
+    },
+    "computeSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "discription": "Compute Subnet Address Space"
+      }
+    },
+    "databricksContainerSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "discription": "Databricks Container Address Space"
+      }
+    },
+    "databricksHostSubnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "discription": "Databricks Host Address Space"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]",
+      "metadata": {
+        "description": "Location of all resources"
+      }
+    },
+    "nextHopIpAddress": {
+      "type": "string",
+      "metadata": {
+        "discription": "Next Hop Ip Address will be azure Firewall"
+      }
+    },
+    "adminUsername": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "sqlAdminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "User e-mail Id required to make Azure Active Directory admin in Sql Admin"
+      }
+    },
+    "sqlAdminSID": {
+      "type": "string",
+      "metadata": {
+        "description": "User object Id required to make Azure Active Directory admin in Sql Admin"
+      }
+    },
+    "synapseAdminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "User e-mail Id required to make Azure Active Directory admin in Sql Admin"
+      }
+    },
+    "synaspeAdminSID": {
+      "type": "string",
+      "metadata": {
+        "description": "User object Id required to make Azure Active Directory admin in Sql Admin"
+      }
+    }
+  },
+  "variables": {
+    "computeResourceGroupName": "[toLower(concat('rg-',parameters('projectCode'),'-', parameters('environment'),'-compute01'))]",
+    "databricksResourceGroupName": "[toLower(concat('rg-',parameters('projectCode'),'-', parameters('environment'),'-databricks01'))]",
+    "dataPlatformResourceGroupName": "[toLower(concat('rg-',parameters('projectCode'),'-', parameters('environment'),'-dataplatform01'))]",
+    "purviewResourceGroupName": "[toLower(concat('rg-',parameters('projectCode'),'-', parameters('environment'),'-mgmt01'))]",
+    "computeResourceGroupDefaultTag": {
+      "Name": "[variables('computeResourceGroupName')]"
+    },
+    "databricksResourceGroupDefaultTag": {
+      "Name": "[variables('databricksResourceGroupName')]"
+    },
+    "dataPlatformResourceGroupDefaultTag": {
+      "Name": "[variables('dataPlatformResourceGroupName')]"
+    },
+    "purviewResourceGroupDefaultTag": {
+      "Name": "[variables('purviewResourceGroupName')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('computeResourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('computeResourceGroupDefaultTag'), parameters('combineTags'))]"
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('databricksResourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('databricksResourceGroupDefaultTag'), parameters('combineTags'))]"
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('dataPlatformResourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('dataPlatformResourceGroupDefaultTag'), parameters('combineTags'))]"
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('purviewResourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('purviewResourceGroupDefaultTag'), parameters('combineTags'))]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "nsgs",
+      "resourceGroup": "[parameters('existingResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Networking/nsgs.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "routes",
+      "resourceGroup": "[parameters('existingResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Networking/route.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nextHopIpAddress": {
+            "value": "[parameters('nextHopIpAddress')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "subnet",
+      "resourceGroup": "[parameters('existingResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Networking/subnet.json"
+        },
+        "parameters": {
+          "existingVnetName": {
+            "value": "[parameters('existingVnetName')]"
+          },
+          "webSubnetAddressPrefix": {
+            "value": "[parameters('webSubnetAddressPrefix')]"
+          },
+          "dataSubnetAddressPrefix": {
+            "value": "[parameters('dataSubnetAddressPrefix')]"
+          },
+          "computeSubnetAddressPrefix": {
+            "value": "[parameters('computeSubnetAddressPrefix')]"
+          },
+          "databricksHostSubnetAddressPrefix": {
+            "value": "[parameters('databricksHostSubnetAddressPrefix')]"
+          },
+          "databricksContainerSubnetAddressPrefix": {
+            "value": "[parameters('databricksContainerSubnetAddressPrefix')]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "computeNsgRef": {
+            "value": "[reference('nsgs').outputs.computeNsgId.value]"
+          },
+          "webNsgRef": {
+            "value": "[reference('nsgs').outputs.webNsgId.value]"
+          },
+          "dataNsgRef": {
+            "value": "[reference('nsgs').outputs.dataNsgId.value]"
+          },
+          "databricksNsgRef": {
+            "value": "[reference('nsgs').outputs.databricksNsgId.value]"
+          },
+          "databricksContainerRouteRef": {
+            "value": "[reference('routes').outputs.databricksContainerRouteId.value]"
+          },
+          "databricksHostRouteRef": {
+            "value": "[reference('routes').outputs.databricksHostRouteId.value]"
+          },
+          "computeRouteRef": {
+            "value": "[reference('routes').outputs.computeRouteId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "shirVM",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('computeResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('computeResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Compute/shirVM.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "computeSubnetRef": {
+            "value": "[reference('subnet').outputs.computeSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "pviewShirVM",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('computeResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('computeResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Compute/purviewShirVM.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "computeSubnetRef": {
+            "value": "[reference('subnet').outputs.computeSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "jumpHostVM",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('computeResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('computeResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Compute/jumpHostVM.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "computeSubnetRef": {
+            "value": "[reference('subnet').outputs.computeSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "databricks",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('databricksResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('databricksResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Databricks/datbricks.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "containerSubnetNameRef": {
+            "value": "[reference('subnet').outputs.databricksContainerSubnetName.value]"
+          },
+          "hostSubnetNameRef": {
+            "value": "[reference('subnet').outputs.databricksHostSubnetName.value]"
+          },
+          "vnetIdRef": {
+            "value": "[reference('subnet').outputs.vnetId.value]"
+          },
+          "webSubnetRef": {
+            "value": "[reference('subnet').outputs.webSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "azureDataFactory",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/adf.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "adlsBronzeStorageAccount",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/bronzeStorageAccount.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "adlsSilverStorageAccount",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/silverStorageAccount.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "keyVault",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/keyVault.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "sqlDatabase",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/sqlDatabase.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "sqlAdminUser": {
+            "value": "[parameters('sqlAdminUser')]"
+          },
+          "sqlAdminSID": {
+            "value": "[parameters('sqlAdminSID')]"
+          }
+        }
+      }
+    },
+
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "synapse",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/synapse.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "computeSubnetRef": {
+            "value": "[reference('subnet').outputs.computeSubnetId.value]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "silverStorageAccountResourceId": {
+            "value": "[reference('adlsSilverStorageAccount').outputs.storageAccountId.value]"
+          },
+          "synapseAdminUser": {
+            "value": "[parameters('synapseAdminUser')]"
+          },
+          "synaspeAdminSID": {
+            "value": "[parameters('synaspeAdminSID')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "logicApp",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/logicApp.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "accessPolicies",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('dataPlatformResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('dataPlatformResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Data Platform/accessPolicies.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "adfObjectId": {
+            "value": "[reference('azureDataFactory').outputs.adfObjectID.value]"
+          },
+          "synapseObjectId": {
+            "value": "[reference('synapse').outputs.syanapseObjectID.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "purview",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('purviewResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('purviewResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Purview/purview.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "webSubnetRef": {
+            "value": "[reference('subnet').outputs.webSubnetId.value]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "purviewIngestion",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups',variables('purviewResourceGroupName'))]"
+      ],
+      "resourceGroup": "[variables('purviewResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "Purview/purviewIngestion.json"
+        },
+        "parameters": {
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "projectCode": {
+            "value": "[parameters('projectCode')]"
+          },
+          "combineTags": {
+            "value": "[parameters('combineTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dataSubnetRef": {
+            "value": "[reference('subnet').outputs.dataSubnetId.value]"
+          },
+          "purviewManagedEventHubId": {
+            "value": "[reference('purview').outputs.managedEventHubNameSpaceId.value]"
+          },
+          "purviewManagedStorageAccountId": {
+            "value": "[reference('purview').outputs.managedStorageAccountNameId.value]"
+          }
+        }
+      }
+    }
+  ]
+}

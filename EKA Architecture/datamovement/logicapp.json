@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for Resources"
+            }
+        },
+        "logicAppName": {
+          "type": "string",
+          "metadata": {
+            "description": "Logic App Name"
+          }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+        "testUri": "https://azure.status.microsoft/status/",
+        "frequency": "Hour",
+        "interval": "1",
+        "type": "recurrence",
+        "actionType": "http",
+        "method": "GET",
+        "workflowSchema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
+    },
+    "resources": [
+        {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2016-06-01",
+      "name": "[parameters('logicAppName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tagValues')]",
+      "properties": {
+        "definition": {
+          "$schema": "[variables('workflowSchema')]",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "testUri": {
+              "type": "string",
+              "defaultValue": "[variables('testUri')]"
+            }
+          },
+          "triggers": {
+            "recurrence": {
+              "type": "[variables('type')]",
+              "recurrence": {
+                "frequency": "[variables('frequency')]",
+                "interval": "[variables('interval')]"
+              }
+            }
+          },
+          "actions": {
+            "actionType": {
+              "type": "[variables('actionType')]",
+              "inputs": {
+                "method": "[variables('method')]",
+                "uri": "[variables('testUri')]"
+              }
+            }
+          }
+        }
+      }
+    }
+    ]
+}

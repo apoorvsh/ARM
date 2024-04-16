@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectCode": {
+      "type": "string",
+      "metadata": {
+        "description": "Project Code"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment of Project"
+      }
+    },
+    "combineTags": {
+      "type": "object",
+      "metadata": {
+        "discription": "Combine Resource Tags for All resources"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location of the Resources."
+      }
+    }
+  },
+  "variables": {
+    "logicAppName": "[toLower(concat('la-',parameters('projectCode'),'-',parameters('environment'),'-mailalert01'))]",
+    "logiAppDefaultTag": {
+      "Name": "[variables('logicAppName')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2017-07-01",
+      "name": "[variables('logicAppName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(variables('logiAppDefaultTag'), parameters('combineTags'))]",
+      "properties": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/schemas/2016-06-01/Microsoft.Logic.json",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "triggers": {},
+          "actions": {},
+          "outputs": {}
+        }
+      }
+    }
+  ]
+}

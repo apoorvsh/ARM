@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "faName": {
+            "value": ["fact2023arm"]
+        },
+        "faTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "faFunctionsExtensionVersion": {
+            "value": ["~4"]
+        },
+        "faFunctionsWorkerRuntime": {
+            "value": ["dotnet"]
+        },
+        "faNetframeworkVersion": {
+            "value": ["v6.0"]
+        },
+        "faKind": {
+            "value": ["functionapp"]
+        },
+        "faAccess": {
+            "value": ["Disabled"]
+        }
+        ,"vnetName" : {
+            "value" :["vnetct2023arm"]
+        },
+        "vnetTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            }
+        },
+        "vnetAddressSpace": {
+            "value": ["10.0.0.0/24"] 
+        },
+        "subnetName": {
+            "value": ["pep-subnet"]  
+        },
+        "subnetAddressPrefix": {
+            "value": ["10.0.0.0/26"]
+        },
+        "saName": {
+            "value": ["fastrgct2023arm"]
+        },
+        "saKind": {
+            "value": ["StorageV2"]
+        },
+        "saTags": {
+            "value": {
+                "Environment" : "UAT",
+                "Owner"       : "John"
+            } 
+        },
+        "saSku": {
+            "value": ["Standard_LRS"]
+        }
+        
+    }
+    
+}
+

@@ -1,0 +1,113 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location"
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Name"
+            }
+        },
+        "skuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU Tier"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        },
+        "containerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Container Name"
+            }
+        }
+    },
+    "variables": {
+        "storageAccountName": "[toLower(concat('blob',uniqueString(subscription().id)))]",
+        "storageKind": "StorageV2",
+        "publicNetworkAccess": "Enabled",
+        "allowBlobPublicAccess": true,
+        "networkAcls": {
+            "bypass": "AzureServices",
+            "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "publicAccess": "Blob",
+        "encryption": {
+        "requireInfrastructureEncryption": false,
+        "publicAccess": "blob"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-09-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('skuname')]",
+                "tier": "[parameters('skutier')]"
+            },
+            "kind": "[variables('storageKind')]",
+            "properties": {
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "allowBlobPublicAccess": "[variables('allowBlobPublicAccess')]",
+                "networkAcls": "[variables('networkAcls')]",
+                "supportsHttpsTrafficOnly": "[variables('supportsHttpsTrafficOnly')]",
+                "encryption": "[variables('encryption')]"
+                
+            },
+            "tags": "[parameters('tagValues')]"
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2022-09-01",
+            "name": "[concat('/',variables('storageAccountName'), '/default/',parameters('containerName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                
+                "publicAccess": "[variables('publicAccess')]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2022-09-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "changeFeed": {
+                "enabled": false
+                },
+                "restorePolicy": {
+                "enabled": false
+                },
+                "containerDeleteRetentionPolicy": {
+                "enabled": true,
+                "days": 1
+                },
+                "deleteRetentionPolicy": {
+                "allowPermanentDelete": false,
+                "enabled": true,
+                "days": 1
+                },
+                "isVersioningEnabled": false
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ]
+}

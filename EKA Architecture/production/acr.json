@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location"
+            }
+        },
+        "acrName": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure Container Registry Name"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU"
+            }
+        },
+        "tagValues": {
+            "type": "object",
+            "metadata": {
+                "description": "Tag Values"
+            }
+        }
+    },
+    "variables": {
+        "publicNetworkAccess": "Enabled",
+        "zoneRedundancy": "disabled"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2023-01-01-preview",
+            "name": "[parameters('acrName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+                "zoneRedundancy": "[variables('zoneRedundancy')]"
+            },
+            "tags": "[parameters('tagValues')]"
+        }
+    ]
+}
